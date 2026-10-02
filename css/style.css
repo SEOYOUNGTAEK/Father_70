@@ -334,3 +334,10 @@ body.idle .nav { opacity: 0; }
   display: inline-flex; align-items: center; justify-content: center; width: 4.4rem; height: 4.4rem; border-radius: 50%;
   border: .25rem solid #c0392b; color: #c0392b; font-size: 1.4rem; transform: rotate(-12deg); opacity: .85;
 }
+
+.skip-btn {
+  position: fixed; left: max(1rem, 8px); top: max(4.6rem, 40px); z-index: 30; font: inherit; font-size: max(1.1rem, 13px);
+  padding: .4rem 1rem; border-radius: 2rem; cursor: pointer; color: var(--ink-soft);
+  background: rgba(255, 250, 241, .9); border: 2px solid var(--line);
+}
+.skip-btn:hover { color: var(--ink); border-color: var(--ink-soft); }

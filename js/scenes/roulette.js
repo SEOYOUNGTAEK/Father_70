@@ -311,11 +311,18 @@
           h('p', { class: 'hint' }, 'R: 이 상품부터 다시 · → 다음')]));
       }
 
+      // 연습·확인용: 룰렛을 다 안 돌려도 엔딩으로 바로 가는 버튼
+      const skipBtn = () => h('button', { class: 'skip-btn', onclick: e => {
+        e.stopPropagation();
+        root.App.go(root.App.FLOW.length - 1);
+      } }, '시상식 건너뛰기 ⏭');
+
       const render = i => {
         stopRace();
         stage.innerHTML = '';
         if (i === 0) intro();
         else roundStep(i - 1);
+        stage.appendChild(skipBtn());
       };
       const racing = () => race && race.started && !race.winner;
       const ctl = root.UI.stepper(count, opts.fromEnd, render, () => !racing());
