@@ -129,7 +129,7 @@
       const S = root.Store, M = root.Matter, Logic = root.Logic;
       const prizes = S.state.prizes, races = Logic.raceCount(prizes.length), count = races + 1;
       const colorOf = {}, labelOf = {};
-      S.state.players.forEach((p, n) => { colorOf[p.id] = PALETTE[n % PALETTE.length]; labelOf[p.id] = shortName(p.name); });
+      S.state.players.forEach((p, n) => { colorOf[p.id] = PALETTE[n % PALETTE.length]; labelOf[p.id] = p.short || shortName(p.name); });
       const nameOf = id => (S.player(id) || {}).name || '?';
       let race = null;
 

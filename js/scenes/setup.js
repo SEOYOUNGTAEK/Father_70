@@ -18,17 +18,22 @@
       h('td', { class: 'num' }, st.coins[p.id] || 0)
     ]));
     const title = h('input', { class: 'wide', value: st.heroTitle });
+    const teamInputs = {};
+    ['A', 'B'].forEach(t => { teamInputs[t] = h('input', { value: st.teamNames[t], style: { borderColor: root.UI.teamColor(t) } }); });
     const prizes = h('textarea', { rows: 9, value: st.prizes.join('\n') });
 
     box = h('div', { class: 'setup' }, [
       h('h2', {}, '⚙ 설정  (G 또는 Esc 로 닫기)'),
       h('label', {}, ['오프닝 문구  ', title]),
+      h('div', { class: 'setup-teams' }, ['A', 'B'].map(t => h('label', {}, [
+        h('b', { style: { color: root.UI.teamColor(t) } }, t + '팀 이름  '), teamInputs[t]]))),
       h('table', {}, [h('tr', {}, ['이름', '팀', '아이(⭐)', '코인'].map(t => h('th', {}, t)))].concat(rows)),
       h('label', {}, ['상품 — 한 줄에 하나, 위에서부터 추첨 (마지막이 1등)', prizes]),
       h('div', { class: 'setup-btns' }, [
         h('button', { class: 'btn', onclick: () => {
           st.players = draft;
           st.heroTitle = title.value.trim() || st.heroTitle;
+          ['A', 'B'].forEach(t => { st.teamNames[t] = teamInputs[t].value.trim() || t + '팀'; });
           st.prizes = prizes.value.split('\n').map(s => s.trim()).filter(Boolean);
           S.save(); close(); go(st.sceneIndex);
         } }, '저장'),

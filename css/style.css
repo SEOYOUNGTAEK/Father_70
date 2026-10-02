@@ -45,14 +45,22 @@ h1, h2, h3 { margin: 0; }
 .teams { display: flex; gap: 2.5rem; align-items: center; justify-content: center; }
 .vs { font-size: 3rem; font-weight: 900; color: var(--gold); }
 .team-card { border: .35rem solid; border-radius: 1.5rem; padding: 1.4rem 2rem; background: rgba(255, 255, 255, .05); width: 34rem; }
+.team-card { transition: transform .15s, background .15s; }
+.team-card.drop-on { transform: scale(1.03); background: rgba(255, 255, 255, .14); }
+.team-label { display: block; font-size: 1.2rem; font-weight: 800; text-align: left; margin-bottom: .3rem; }
 .team-input {
-  font: inherit; font-size: 3.2rem; font-weight: 900; text-align: center; width: 100%;
-  background: transparent; border: 0; border-bottom: .2rem dashed rgba(255, 255, 255, .3); outline: none;
+  font: inherit; font-size: 3rem; font-weight: 900; text-align: center; width: 100%;
+  background: rgba(255, 255, 255, .07); border: .2rem dashed; border-radius: .8rem; padding: .3rem .6rem; outline: none;
 }
+.team-input:focus { background: rgba(255, 255, 255, .15); border-style: solid; }
 .team-input::placeholder { color: rgba(255, 255, 255, .3); }
-.roster { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: 1.2rem; }
-.chip { font-size: 1.6rem; padding: .3rem 1rem; border-radius: 2rem; background: rgba(255, 255, 255, .12); }
+.roster { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: 1.2rem; min-height: 5.6rem; align-content: center; }
+.roster-empty { font-size: 1.4rem; color: var(--muted); }
+.team-count { margin-top: .8rem; font-size: 1.2rem; color: var(--muted); }
+.chip { font-size: 1.8rem; padding: .35rem 1.1rem; border-radius: 2rem; background: rgba(255, 255, 255, .12); cursor: grab; user-select: none; }
+.chip:hover { background: rgba(255, 255, 255, .22); }
 .chip.kid { background: rgba(255, 207, 90, .25); }
+.chip.dragging { opacity: .4; }
 .prize-list { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 3rem; font-size: 1.8rem; margin: 1rem auto 3rem; max-width: 70rem; text-align: left; }
 .prize-row { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 1rem; border-radius: .6rem; background: rgba(255, 255, 255, .06); }
 .petal { position: fixed; top: -8vh; animation: fall linear infinite; pointer-events: none; }
@@ -173,6 +181,8 @@ h1, h2, h3 { margin: 0; }
 .setup h3 { margin-top: 1rem; }
 .setup input, .setup select, .setup textarea { font: inherit; padding: .3rem .5rem; }
 .setup .wide { width: 34rem; }
+.setup-teams { display: flex; gap: 2rem; margin-top: .8rem; }
+.setup-teams input { border: 2px solid; }
 .setup table { border-collapse: collapse; margin: 1rem 0; }
 .setup td, .setup th { padding: .3rem .6rem; text-align: left; }
 .setup td.num { text-align: center; }
