@@ -5,8 +5,8 @@
 
   function quizPoints(base, kid) { return kid ? base * 2 : base; }
 
-  // stage 1 = 가장 크게 확대된 상태
-  function zoomPoints(stage) { return stage <= 2 ? 3 : stage <= 4 ? 2 : 1; }
+  // 확대 퀴즈 7단계 중 stage (1 = 가장 크게 확대된 상태)
+  function zoomPoints(stage) { return stage <= 3 ? 3 : stage <= 5 ? 2 : 1; }
 
   function teamAward(players, coins, team, points) {
     const out = Object.assign({}, coins);

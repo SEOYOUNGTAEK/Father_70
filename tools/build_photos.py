@@ -17,7 +17,7 @@ SRC = ROOT / "photos"
 OUT = ROOT / "assets" / "photos"
 EXTS = {".jpg", ".jpeg", ".png"}
 VIDEO_EXTS = {".mp4"}
-SLIDE_PX, REF_PX, QUALITY = 1920, 2560, 82
+SLIDE_PX, REF_PX, QUALITY = 1920, 3600, 82
 
 
 def web_name(name):

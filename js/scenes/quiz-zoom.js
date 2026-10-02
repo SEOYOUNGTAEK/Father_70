@@ -1,7 +1,7 @@
 // 게임2 · 확대 사진 퀴즈 — 5단계 줌아웃, 일찍 맞힐수록 코인 많이
 (function (root) {
   'use strict';
-  const h = root.UI.h, SCALES = [6, 4, 2.6, 1.7, 1.25];
+  const h = root.UI.h, SCALES = [8, 6, 4.5, 3.2, 2.3, 1.6, 1.25];
 
   root.Scenes.quizZoom = {
     create(stage, arg, opts) {
@@ -23,14 +23,15 @@
             h('ul', { class: 'rules' }, [
               h('li', {}, '아주 크게 확대한 사진이 점점 작아져요'),
               h('li', {}, '오른쪽 질문의 정답을 알면 먼저 외치기!'),
-              h('li', {}, '빨리 맞힐수록 🪙3 → 🪙2 → 🪙1 · ⭐ 아이는 2배')
+              h('li', {}, '1~3단계 🪙3 · 4~5단계 🪙2 · 6~7단계 🪙1 · ⭐ 아이는 2배')
             ])
           ]));
           return;
         }
         const q = Q[s.n], reveal = s.type === 'reveal';
-        // 문제에 zoom 이 있으면 그 배율에서 시작해 1.25배까지 고르게 줄인다
-        const scales = q.zoom ? SCALES.map((_, k) => Math.max(1.25, Math.pow(q.zoom, (SCALES.length - 1 - k) / (SCALES.length - 1)))) : SCALES;
+        // 문제에 zoom 이 있으면 그 배율에서 시작해 1.25배까지 줄인다 — 앞쪽 단계는 천천히 줄어서 4번쯤 줄여야 누군지 보이게
+        const last = SCALES.length - 1;
+        const scales = q.zoom ? SCALES.map((_, k) => Math.max(1.25, Math.pow(q.zoom, Math.pow((last - k) / last, 0.7)))) : SCALES;
         const scale = reveal ? 1 : scales[s.stage - 1];
         const points = reveal ? 1 : root.Logic.zoomPoints(s.stage);
         const from = s.n === lastN ? lastScale : scale;

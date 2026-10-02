@@ -10,8 +10,8 @@ test('quizPoints: 아이 정답은 2배', () => {
   assert.equal(L.quizPoints(3, true), 6);
 });
 
-test('zoomPoints: 단계별 3,3,2,2,1', () => {
-  assert.deepEqual([1, 2, 3, 4, 5].map(L.zoomPoints), [3, 3, 2, 2, 1]);
+test('zoomPoints: 7단계 — 1~3단계 3, 4~5단계 2, 6~7단계 1', () => {
+  assert.deepEqual([1, 2, 3, 4, 5, 6, 7].map(L.zoomPoints), [3, 3, 3, 2, 2, 1, 1]);
 });
 
 test('teamAward: 팀원 전원 지급, 원본 불변', () => {
