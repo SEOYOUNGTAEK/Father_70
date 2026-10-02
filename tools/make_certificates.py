@@ -75,13 +75,13 @@ def draw_certificate(c):
     d.text((cx, 875), c["title"], font=tf, fill=(255, 255, 255), anchor="mm")
 
     left, right = 330, W - 330
-    d.text((left, 1150), c["to"] + " 귀하", font=font(True, 100), fill=INK, anchor="ls")
+    d.text((left, 1260), c["to"] + " 귀하", font=font(True, 110), fill=INK, anchor="ls")
 
-    bf = font(False, 88)
-    y = 1330
+    bf = font(False, 116)
+    y = 1560
     for line in wrap(c["body"], right - left, lambda t: d.textlength(t, font=bf)):
         d.text((left, y), line, font=bf, fill=INK, anchor="ls")
-        y += 160
+        y += 215
 
     d.text((cx, H - 820), "2026년      월      일", font=font(False, 84), fill=SOFT, anchor="mm")
 
