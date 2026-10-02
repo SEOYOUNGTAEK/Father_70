@@ -3,11 +3,11 @@
 (function (root) {
   'use strict';
   const h = root.UI.h;
-  const W = 1600, H = 5600, GATE_Y = 640, GRAVITY = 1.7, MAX_SPEED = 32, TIMEOUT_FRAMES = 60 * 45;
-  const SLOW_SCALE = 0.22, ZOOM_IN = 1.9; // 결승 직전 슬로모션 배속과 카메라 확대 배율
+  const W = 1600, H = 6400, GATE_Y = 640, GRAVITY = 1.7, MAX_SPEED = 32, TIMEOUT_FRAMES = 60 * 45;
+  const SLOW_SCALE = 0.36, ZOOM_IN = 1.6; // 역전 구간 슬로모션 배속과 카메라 확대 배율
   const PALETTE = ['#ef6f5e', '#f4b942', '#7cc48a', '#5aa3e0', '#b48ad8', '#f2924a', '#4fbfaa', '#f08fb0', '#a7c957', '#8da0e8'];
 
-  // 핀 구간 → 지그재그 경사로 → 회전 막대 를 쌓고, 마지막에 깔때기 + 회전 막대 → 결승선
+  // 핀 구간 → 지그재그 경사로 → 회전 막대 를 쌓고, 마지막에 깔때기 → 역전 구간(풍차·범퍼) → 결승선
   function buildTrack(M) {
     const B = M.Bodies, bodies = [], rotors = [];
     const wall = { isStatic: true, restitution: 0.3, friction: 0, label: 'wall' };
@@ -15,7 +15,7 @@
       B.rectangle(W / 2, H + 40, W * 1.2, 80, wall));
     let y = 760, k = 0;
     const SIZES = [625, 760, 400];
-    while (y + SIZES[k % 3] < H - 1300) {
+    while (y + SIZES[k % 3] < H - 2050) {
       const kind = k % 3;
       if (kind === 0) {
         for (let r = 0; r < 5; r++)
@@ -38,13 +38,26 @@
       k++;
     }
     // 결승 깔때기: 가운데 좁은 구멍으로 한 줄로 몰리게
-    const fy = H - 1050;
+    const fy = H - 1800;
     bodies.push(B.rectangle(W * 0.225, fy, W * 0.5, 34, { isStatic: true, angle: 0.35, friction: 0.0005, label: 'ramp' }));
     bodies.push(B.rectangle(W * 0.775, fy, W * 0.5, 34, { isStatic: true, angle: -0.35, friction: 0.0005, label: 'ramp' }));
-    const last = B.rectangle(W / 2, H - 720, 260, 22, { isStatic: true, label: 'rotor' });
-    last.spin = 0.06;
-    rotors.push(last);
-    bodies.push(last);
+
+    // 역전 구간 — 풍차가 선두를 쳐 올리고, 범퍼가 튕겨내서 순위가 뒤집힐 수 있게
+    const mill = (x, y, len, spin) => {
+      const m = M.Body.create({ parts: [B.rectangle(x, y, len, 22), B.rectangle(x, y, 22, len)], label: 'mill' });
+      M.Body.setStatic(m, true);
+      m.spin = spin;
+      rotors.push(m);
+      bodies.push(m);
+    };
+    const bumper = (x, y) => bodies.push(B.circle(x, y, 30, { isStatic: true, restitution: 1.15, label: 'bumper' }));
+    mill(W * 0.36, H - 1480, 340, 0.05);
+    mill(W * 0.64, H - 1480, 340, -0.05);
+    [0.14, 0.32, 0.5, 0.68, 0.86].forEach(fx => bumper(W * fx, H - 1210));
+    [0.23, 0.41, 0.59, 0.77].forEach(fx => bumper(W * fx, H - 1060));
+    mill(W * 0.5, H - 760, 460, 0.035);
+    mill(W * 0.13, H - 720, 220, -0.06);
+    mill(W * 0.87, H - 720, 220, 0.06);
     return { bodies, rotors, finishY: H - 380, slowY: fy + 150 };
   }
 
@@ -108,6 +121,7 @@
     if (!race.slow && lead.position.y > race.track.slowY) {
       race.slow = true;
       race.engine.timing.timeScale = SLOW_SCALE;
+      race.slowLeader = lead.pid; // 역전 여부 확인용
     }
     // 골인했거나, 너무 오래 걸리면 제일 앞선 구슬이 당첨
     if (lead.position.y > race.track.finishY || race.frames > TIMEOUT_FRAMES) race.winner = lead.pid;
@@ -176,12 +190,24 @@
         const ctx = canvas.getContext('2d');
 
         function drawBody(b, color) {
-          ctx.fillStyle = color || (b.label === 'peg' ? '#d38f1f' : b.label === 'rotor' ? '#c8553d' : '#b98a5e');
-          ctx.beginPath();
-          if (b.circleRadius) ctx.arc(b.position.x, b.position.y, b.circleRadius, 0, Math.PI * 2);
-          else b.vertices.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
-          ctx.closePath();
-          ctx.fill();
+          const fill = color || { peg: '#d38f1f', rotor: '#c8553d', mill: '#c8553d', bumper: '#e58f9e' }[b.label] || '#b98a5e';
+          const shapes = b.parts.length > 1 ? b.parts.slice(1) : [b]; // 풍차처럼 여러 조각인 몸체
+          shapes.forEach(part => {
+            ctx.fillStyle = fill;
+            ctx.beginPath();
+            if (part.circleRadius) ctx.arc(part.position.x, part.position.y, part.circleRadius, 0, Math.PI * 2);
+            else part.vertices.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
+            ctx.closePath();
+            ctx.fill();
+          });
+          if (b.label === 'bumper') {
+            ctx.lineWidth = 6; ctx.strokeStyle = '#fff';
+            ctx.beginPath(); ctx.arc(b.position.x, b.position.y, b.circleRadius - 8, 0, Math.PI * 2); ctx.stroke();
+          }
+          if (b.label === 'mill') {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(b.position.x, b.position.y, 12, 0, Math.PI * 2); ctx.fill();
+          }
         }
 
         function draw() {
@@ -249,7 +275,7 @@
           if (me.slow && !me.slowShown && !me.winner) {
             me.slowShown = true;
             wrap.classList.add('slowmo');
-            status.textContent = '두근두근… 🥁 결승 직전!';
+            status.textContent = '🌀 역전 구간! 두근두근… 🥁';
           }
           draw();
           me.raf = requestAnimationFrame(frame);
