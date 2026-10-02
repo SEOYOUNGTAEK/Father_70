@@ -1,22 +1,22 @@
 // 행사 기본 설정 — 현장에서는 G 키(설정 화면)로도 바꿀 수 있어요.
 // version 을 올리면 이미 저장된 브라우저에도 아래 참가자 명단이 새로 적용돼요(코인은 유지).
 window.PARTY_CONFIG = {
-  version: 4,
+  version: 5,
   heroTitle: '아빠의 칠순을 진심으로 축하합니다',
   // short: 마블 룰렛 구슬에 쓰는 두 글자 (없으면 세 글자 이름의 뒤 두 글자)
   players: [
     { id: 'gpa',    name: '할아버지', short: '할배', team: 'A', kid: false },
     { id: 'sister', name: '서영아',   team: 'A', kid: false },
-    { id: 'son',    name: '서준우',   team: 'A', kid: true },
     { id: 'niece1', name: '차예나',   team: 'A', kid: true },
+    { id: 'niece3', name: '차예서',   team: 'A', kid: true },
+    { id: 'son',    name: '서준우',   team: 'B', kid: true },
     { id: 'gma',    name: '할머니',   short: '할매', team: 'B', kid: false },
     { id: 'bil',    name: '차근창',   team: 'B', kid: false },
-    { id: 'wife',   name: '현세민',   team: 'B', kid: false },
-    { id: 'niece3', name: '차예서',   team: 'B', kid: true }
+    { id: 'wife',   name: '현세민',   team: 'B', kid: false }
   ],
   teams: {
-    A: { name: 'A팀', color: '#e2703a' },
-    B: { name: 'B팀', color: '#3f80c4' }
+    A: { name: '할아버지 팀', color: '#e2703a' },
+    B: { name: '할머니 팀', color: '#3f80c4' }
   },
   // 위에서부터 추첨 — 첫 줄이 1등 상품 (먼저 골인한 사람이 당첨, 당첨자는 빠짐)
   prizes: [
