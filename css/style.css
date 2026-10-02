@@ -313,3 +313,24 @@ body.idle .nav { opacity: 0; }
 .nav-btn.board { right: calc(max(1rem, 8px) + 2 * (max(3.6rem, 44px) + 8px)); }
 .nav-btn.gear { right: calc(max(1rem, 8px) + max(3.6rem, 44px) + 8px); }
 .nav-btn.full { right: max(1rem, 8px); }
+
+/* 엔딩 상장 */
+.cert {
+  width: min(66rem, 90vw); max-height: 86vh; padding: .8rem; background: #fffdf6; border-radius: .4rem;
+  box-shadow: 0 1.2rem 3rem rgba(110, 72, 40, .25); animation: certIn .8s ease-out;
+}
+@keyframes certIn { from { opacity: 0; transform: translateY(2rem) rotate(-1deg); } to { opacity: 1; transform: none; } }
+.cert-inner {
+  border: .5rem double var(--gold); padding: 1.6rem 3.6rem 1.4rem; text-align: center; font-family: var(--serif);
+  background: radial-gradient(ellipse at center, #fffdf6 55%, #fbefd6 100%);
+}
+.cert-head { font-size: 4.4rem; font-weight: 700; letter-spacing: .3em; color: var(--ink); }
+.cert-title { display: inline-block; margin-top: .4rem; font-size: 2.3rem; font-weight: 700; color: #fff; background: var(--accent); padding: .3rem 1.8rem; border-radius: 2rem; }
+.cert-to { margin-top: 1.2rem; font-size: 2.2rem; font-weight: 700; text-align: left; }
+.cert-body { margin: .8rem 0 1rem; font-size: 1.95rem; line-height: 1.75; text-align: left; word-break: keep-all; }
+.cert-date { font-size: 1.8rem; color: var(--ink-soft); }
+.cert-from { margin-top: .6rem; font-size: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 1rem; }
+.cert-seal {
+  display: inline-flex; align-items: center; justify-content: center; width: 4.4rem; height: 4.4rem; border-radius: 50%;
+  border: .25rem solid #c0392b; color: #c0392b; font-size: 1.4rem; transform: rotate(-12deg); opacity: .85;
+}

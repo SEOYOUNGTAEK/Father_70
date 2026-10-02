@@ -29,7 +29,9 @@
           return;
         }
         const q = Q[s.n], reveal = s.type === 'reveal';
-        const scale = reveal ? 1 : SCALES[s.stage - 1];
+        // 문제에 zoom 이 있으면 그 배율에서 시작해 1.25배까지 고르게 줄인다
+        const scales = q.zoom ? SCALES.map((_, k) => Math.max(1.25, Math.pow(q.zoom, (SCALES.length - 1 - k) / (SCALES.length - 1)))) : SCALES;
+        const scale = reveal ? 1 : scales[s.stage - 1];
         const points = reveal ? 1 : root.Logic.zoomPoints(s.stage);
         const from = s.n === lastN ? lastScale : scale;
         const img = h('img', { class: 'zoom-img', src: q.photo, alt: '', style: {
