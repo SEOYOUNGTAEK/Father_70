@@ -1,4 +1,4 @@
-// 게임3 · 7초 맞추기 — 한 명씩 눈 감고 7초 세기, 오차 순위로 코인
+// 게임3 · 7초 맞추기 — 올라가는 초시계를 보면서 직접 7.00초에 멈추기, 오차 순위로 코인
 (function (root) {
   'use strict';
   const h = root.UI.h, Logic = root.Logic;
@@ -7,7 +7,8 @@
   root.Scenes.seven = {
     create(stage, arg, opts) {
       const S = root.Store, players = S.state.players, count = players.length + 2;
-      let startedAt = null;
+      let startedAt = null, ticker = 0;
+      const stopTicker = () => { clearInterval(ticker); ticker = 0; };
 
       function intro() {
         stage.appendChild(h('div', { class: 'game-intro' }, [
@@ -15,7 +16,8 @@
           h('h1', {}, '⏱ 7초 맞추기'),
           h('ul', { class: 'rules' }, [
             h('li', {}, '칠순이니까 7초! 한 명씩 나와요'),
-            h('li', {}, '시작하면 눈 감고 마음속으로 7초 → "멈춰!"'),
+            h('li', {}, '올라가는 초시계를 보고 7.00초에 직접 멈추기!'),
+            h('li', {}, '시작·멈춤은 본인이 스페이스 또는 화면 클릭'),
             h('li', {}, '1등 🪙3 · 2등 🪙2 · 3등 🪙1'),
             h('li', {}, '정확히 7초(±0.05)면 잭팟 🪙7 !')
           ])
@@ -26,7 +28,10 @@
         const res = S.state.seven[p.id];
         let body;
         if (startedAt) {
-          body = h('div', { class: 'seven-run' }, [h('div', { class: 'pulse' }, '⏱'), h('p', {}, '눈 감고… 7초라고 생각되면 "멈춰!"')]);
+          const num = h('div', { class: 'big-num running' }, '0.00');
+          stopTicker();
+          ticker = setInterval(() => { num.textContent = fmt((performance.now() - startedAt) / 1000); }, 20);
+          body = h('div', { class: 'seven-run' }, [num, h('p', {}, '7.00 에 멈춰!')]);
         } else if (res != null) {
           const d = res - 7, jackpot = Math.abs(d) <= 0.05;
           body = h('div', { class: 'seven-result' + (jackpot ? ' jackpot' : '') }, [
@@ -34,13 +39,13 @@
             h('p', {}, jackpot ? '🎉 잭팟! 거의 정확히 7초!' : (d > 0 ? '+' : '') + fmt(d) + '초 차이')
           ]);
         } else {
-          body = h('div', {}, [h('div', { class: 'big-num dim' }, '7.00'), h('p', {}, '준비되면 스페이스!')]);
+          body = h('div', {}, [h('div', { class: 'big-num dim' }, '0.00'), h('p', {}, '준비되면 스페이스 또는 클릭!')]);
         }
-        stage.appendChild(h('div', { class: 'seven' }, [
+        stage.appendChild(h('div', { class: 'seven seven-player', onclick: toggle }, [
           h('div', { class: 'seven-order' }, order + ' / ' + players.length),
           h('h1', { class: 'seven-name', style: { color: root.UI.teamColor(p.team) } }, (p.kid ? '⭐ ' : '') + p.name),
           body,
-          h('p', { class: 'hint' }, startedAt ? 'Space: 멈춤' : res != null ? (S.state.sevenPaid ? '→ 다음' : 'R: 다시 하기 · → 다음 사람') : 'Space: 시작')
+          h('p', { class: 'hint' }, startedAt ? 'Space / 클릭: 멈춤' : res != null ? (S.state.sevenPaid ? '→ 다음' : 'R: 다시 하기 · → 다음 사람') : 'Space / 클릭: 시작')
         ]));
       }
 
@@ -69,6 +74,7 @@
       }
 
       const render = i => {
+        stopTicker();
         stage.innerHTML = '';
         if (i === 0) intro();
         else if (i === count - 1) ranking();
@@ -76,19 +82,25 @@
       };
       const ctl = root.UI.stepper(count, opts.fromEnd, render, () => !startedAt);
 
+      // 시작/멈춤 — 스페이스와 화면 클릭 공통
+      function toggle() {
+        const i = ctl.index();
+        if (i < 1 || i > players.length) return;
+        const p = players[i - 1];
+        if (startedAt) {
+          S.state.seven[p.id] = Math.round((performance.now() - startedAt) / 10) / 100;
+          startedAt = null; S.save(); render(i);
+        } else if (S.state.seven[p.id] == null) {
+          startedAt = performance.now(); render(i);
+        }
+      }
+      ctl.destroy = stopTicker;
+
       ctl.key = e => {
         const i = ctl.index();
         if (i < 1 || i > players.length) return false;
         const p = players[i - 1], k = e.key.toLowerCase();
-        if (e.key === ' ') {
-          if (startedAt) {
-            S.state.seven[p.id] = Math.round((performance.now() - startedAt) / 10) / 100;
-            startedAt = null; S.save(); render(i);
-          } else if (S.state.seven[p.id] == null) {
-            startedAt = performance.now(); render(i);
-          }
-          return true;
-        }
+        if (e.key === ' ') { toggle(); return true; }
         if ((k === 'r' || k === 'ㄱ') && !startedAt && !S.state.sevenPaid) {
           delete S.state.seven[p.id]; S.save(); render(i); return true;
         }
