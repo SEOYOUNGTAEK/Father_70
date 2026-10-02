@@ -1,0 +1,50 @@
+// 게임2 · 확대 사진 퀴즈 — 5단계 줌아웃, 일찍 맞힐수록 코인 많이
+(function (root) {
+  'use strict';
+  const h = root.UI.h, SCALES = [6, 4, 2.6, 1.7, 1.25];
+
+  root.Scenes.quizZoom = {
+    create(stage, arg, opts) {
+      const Q = root.ZOOM_QUIZ || [];
+      const steps = [{ type: 'intro' }];
+      Q.forEach((q, n) => {
+        for (let z = 1; z <= SCALES.length; z++) steps.push({ type: 'zoom', n, stage: z });
+        steps.push({ type: 'reveal', n });
+      });
+      let lastScale = SCALES[0], lastN = -1;
+
+      const render = i => {
+        stage.innerHTML = '';
+        const s = steps[i];
+        if (s.type === 'intro') {
+          stage.appendChild(h('div', { class: 'game-intro' }, [
+            h('div', { class: 'game-no' }, 'GAME 2'),
+            h('h1', {}, '🔍 확대 사진 퀴즈'),
+            h('ul', { class: 'rules' }, [
+              h('li', {}, '아주 크게 확대한 사진이 점점 작아져요'),
+              h('li', {}, '무엇인지 알면 먼저 외치기!'),
+              h('li', {}, '빨리 맞힐수록 🪙3 → 🪙2 → 🪙1 · ⭐ 아이는 2배')
+            ])
+          ]));
+          return;
+        }
+        const q = Q[s.n], reveal = s.type === 'reveal';
+        const scale = reveal ? 1 : SCALES[s.stage - 1];
+        const points = reveal ? 1 : root.Logic.zoomPoints(s.stage);
+        const from = s.n === lastN ? lastScale : scale;
+        const img = h('img', { class: 'zoom-img', src: q.photo, alt: '', style: {
+          transformOrigin: (q.cx * 100) + '% ' + (q.cy * 100) + '%', transform: 'scale(' + from + ')'
+        } });
+        stage.appendChild(h('div', { class: 'zoom' }, [
+          h('div', { class: 'q-head' }, 'Q' + (s.n + 1) + ' / ' + Q.length + (reveal ? '' : '  ·  단계 ' + s.stage + ' / ' + SCALES.length + '  ·  지금 맞히면 🪙' + points)),
+          h('div', { class: 'zoom-frame' + (reveal ? ' revealed' : '') }, img),
+          reveal ? h('div', { class: 'zoom-answer' }, '정답: ' + q.answer) : null,
+          root.UI.awardBar('zoom-' + s.n, () => points)
+        ]));
+        requestAnimationFrame(() => requestAnimationFrame(() => { img.style.transform = 'scale(' + scale + ')'; }));
+        lastScale = scale; lastN = s.n;
+      };
+      return root.UI.stepper(steps.length, opts.fromEnd, render);
+    }
+  };
+})(this);
