@@ -28,7 +28,7 @@
       h('div', { class: 'setup-teams' }, ['A', 'B'].map(t => h('label', {}, [
         h('b', { style: { color: root.UI.teamColor(t) } }, t + '팀 이름  '), teamInputs[t]]))),
       h('table', {}, [h('tr', {}, ['이름', '팀', '아이(⭐)', '코인'].map(t => h('th', {}, t)))].concat(rows)),
-      h('label', {}, ['상품 — 한 줄에 하나, 위에서부터 추첨 (마지막이 1등)', prizes]),
+      h('label', {}, ['상품 — 한 줄에 하나, 위에서부터 추첨 (첫 줄이 1등)', prizes]),
       h('div', { class: 'setup-btns' }, [
         h('button', { class: 'btn', onclick: () => {
           st.players = draft;

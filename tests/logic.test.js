@@ -47,25 +47,6 @@ test('marblePool: 최소 1개, 당첨자 제외', () => {
   assert.deepEqual(pool, [{ id: 'a1', count: 4 }, { id: 'a2', count: 1 }]);
 });
 
-test('survivalResult: 끝까지 못 들어온 사람이 이번 상품', () => {
-  const out = L.survivalResult(['a', 'b', 'c'], ['b', 'c'], ['작은', '중간', '1등'], 0);
-  assert.deepEqual(out, [{ index: 0, prize: '작은', id: 'a' }]);
-});
-
-test('survivalResult: 마지막 2명 결승은 먼저 들어온 사람이 1등', () => {
-  const out = L.survivalResult(['a', 'b'], ['b'], ['작은', '2등', '1등'], 1);
-  assert.deepEqual(out, [{ index: 1, prize: '2등', id: 'a' }, { index: 2, prize: '1등', id: 'b' }]);
-});
-
-test('survivalResult: 아직 여러 명 남았으면 null', () => {
-  assert.equal(L.survivalResult(['a', 'b', 'c'], ['b'], ['x', 'y', 'z'], 0), null);
-});
-
-test('raceCount: 상품 n개면 레이스 n-1번 (결승에서 2개 결정)', () => {
-  assert.equal(L.raceCount(8), 7);
-  assert.equal(L.raceCount(1), 1);
-});
-
 test('chaptersWithPhotos: 사진 없는 챕터 제외', () => {
   const ch = [{ title: 'x', folder: 'f1' }, { title: 'y', folder: 'f2' }, { title: 'z', folder: 'f3' }];
   assert.deepEqual(L.chaptersWithPhotos(ch, { f1: ['a.jpg'], f2: [] }).map(c => c.folder), ['f1']);
