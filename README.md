@@ -49,6 +49,10 @@
   `photos/베스트컷_목록.txt` 에 `폴더: 이름` 아래 파일을 적으면 그 사진만 그 순서로 슬라이드에 나와요.
   원본 `photos/` 는 Git 에 올라가지 않아요.
 
+## 상장 인쇄
+
+`data/certificates.js` 문구를 고친 뒤 `python tools/make_certificates.py` → `print/` 폴더에 A4 세로 300dpi PNG 2장과 PDF 가 생겨요(날짜는 손으로 쓰는 칸). 화면 엔딩도 같은 문구를 써요.
+
 ## 새 버전 올릴 때
 
 `index.html` 의 `?v=8` 숫자를 모두 하나씩 올려야 폰·노트북 브라우저가 예전 파일을 쓰지 않아요.

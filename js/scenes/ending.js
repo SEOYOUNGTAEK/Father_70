@@ -1,4 +1,4 @@
-// 엔딩 — 손주들이 드리는 상장(한 장씩) → 축하 메시지 + 상품 결과 + 꽃잎
+// 엔딩 — 손주 상장(웃음) → 자녀 감사패(감동) → 축하 메시지 + 상품 결과 + 꽃잎
 (function (root) {
   'use strict';
   const h = root.UI.h;
@@ -9,14 +9,14 @@
   };
 
   function certificate(c) {
-    return h('div', { class: 'cert' }, [
+    return h('div', { class: 'cert ' + (c.tone || 'fun') }, [
       h('div', { class: 'cert-inner' }, [
-        h('div', { class: 'cert-head' }, '상　장'),
+        h('div', { class: 'cert-head' }, c.head || '상 장'),
         h('div', { class: 'cert-title' }, c.title),
         h('div', { class: 'cert-to' }, c.to + ' 귀하'),
         h('p', { class: 'cert-body' }, c.body),
         h('div', { class: 'cert-date' }, today()),
-        h('div', { class: 'cert-from' }, [c.from, h('span', { class: 'cert-seal' }, '손주')])
+        h('div', { class: 'cert-from' }, [c.from, h('span', { class: 'cert-seal' }, c.seal || '손주')])
       ])
     ]);
   }
@@ -43,7 +43,7 @@
 
   root.Scenes.ending = {
     create(stage, arg, opts) {
-      const certs = root.PARTY_CONFIG.certificates || [];
+      const certs = root.CERTIFICATES || [];
       return root.UI.stepper(certs.length + 1, opts.fromEnd, i => {
         stage.innerHTML = '';
         if (i < certs.length) stage.appendChild(certificate(certs[i]));

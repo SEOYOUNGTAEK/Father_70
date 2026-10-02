@@ -327,7 +327,7 @@ body.idle .nav { opacity: 0; }
 .cert-head { font-size: 4.4rem; font-weight: 700; letter-spacing: .3em; color: var(--ink); }
 .cert-title { display: inline-block; margin-top: .4rem; font-size: 2.3rem; font-weight: 700; color: #fff; background: var(--accent); padding: .3rem 1.8rem; border-radius: 2rem; }
 .cert-to { margin-top: 1.2rem; font-size: 2.2rem; font-weight: 700; text-align: left; }
-.cert-body { margin: .8rem 0 1rem; font-size: 1.95rem; line-height: 1.75; text-align: left; word-break: keep-all; }
+.cert-body { margin: .7rem 0 .9rem; font-size: 1.8rem; line-height: 1.7; text-align: left; word-break: keep-all; }
 .cert-date { font-size: 1.8rem; color: var(--ink-soft); }
 .cert-from { margin-top: .6rem; font-size: 2rem; font-weight: 700; display: inline-flex; align-items: center; gap: 1rem; }
 .cert-seal {
@@ -341,3 +341,7 @@ body.idle .nav { opacity: 0; }
   background: rgba(255, 250, 241, .9); border: 2px solid var(--line);
 }
 .skip-btn:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+.cert.warm .cert-inner { border-color: #b8862b; background: radial-gradient(ellipse at center, #fffdf6 55%, #f6ead2 100%); }
+.cert.warm .cert-title { background: #8a5a3b; }
+.cert-head { letter-spacing: .25em; }
