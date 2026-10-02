@@ -27,8 +27,11 @@
         }
         stage.appendChild(h('div', { class: 'memory-photo' }, [
           h('img', { class: 'blur-bg', src: s.src, alt: '' }),
-          h('img', { class: 'kb kb-' + 'abcd'[(n++) % 4], src: s.src, alt: '' }),
-          h('div', { class: 'memory-caption' }, s.chapter.title)
+          h('div', { class: 'frame kb-' + 'abcd'[(n++) % 4] }, [
+            h('div', { class: 'tape' }),
+            h('img', { src: s.src, alt: '' }),
+            h('div', { class: 'memory-caption' }, s.chapter.title)
+          ])
         ]));
         const next = slides[i + 1];
         if (next && next.src) new Image().src = next.src;

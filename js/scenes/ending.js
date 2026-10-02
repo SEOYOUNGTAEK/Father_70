@@ -13,11 +13,11 @@
         fontSize: 1.4 + Math.random() * 1.6 + 'rem'
       } }, ['🌸', '🎉', '✨', '🪙'][Math.floor(Math.random() * 4)]));
       stage.appendChild(h('div', { class: 'ending' }, petals.concat([
-        h('div', { class: 'hanja' }, '七旬'),
+        h('div', { class: 'hanja-wrap' }, h('div', { class: 'hanja' }, '七旬')),
         h('h1', { class: 'hero' }, '사랑하고 존경합니다'),
         h('p', { class: 'sub' }, S.state.heroTitle),
         results.length ? h('div', { class: 'prize-list' }, results.map(r => h('div', { class: 'prize-row' }, [
-          h('span', {}, '🎁 ' + r.prize),
+          h('span', {}, (/^\p{Extended_Pictographic}/u.test(r.prize) ? '' : '🎁 ') + r.prize),
           h('b', { style: { color: root.UI.teamColor((S.player(r.id) || {}).team || 'A') } }, (S.player(r.id) || {}).name || '?')
         ]))) : null,
         h('p', { class: 'hint' }, '📸 다 같이 단체 사진 찍어요!')

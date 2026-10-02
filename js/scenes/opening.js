@@ -37,7 +37,7 @@
       function render() {
         stage.innerHTML = '';
         stage.appendChild(h('div', { class: 'opening' }, [
-          h('div', { class: 'hanja' }, '七旬'),
+          h('div', { class: 'hanja-wrap' }, h('div', { class: 'hanja' }, '七旬')),
           h('h1', { class: 'hero' }, S.state.heroTitle),
           h('div', { class: 'teams' }, [teamCard('A'), h('div', { class: 'vs' }, 'VS'), teamCard('B')]),
           h('p', { class: 'hint' }, '이름을 끌어서 팀을 나누고, 팀장 어린이가 팀 이름을 지어 주세요  ·  → 키로 시작')

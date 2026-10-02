@@ -56,9 +56,27 @@
     else if (e.key === ' ') e.preventDefault();
   }
 
+  // 화면 위 축하 가랜드 — 살짝 늘어진 줄을 따라 깃발을 단다
+  function buildBunting() {
+    const colors = ['#c8553d', '#d38f1f', '#5f9a72', '#4a8bc9', '#e58f9e', '#f0b85a'];
+    const box = document.createElement('div');
+    box.className = 'bunting';
+    const n = 22;
+    for (let i = 0; i < n; i++) {
+      const t = i / (n - 1), f = document.createElement('span');
+      f.style.left = 'calc(' + (t * 100) + '% - 1.3rem)';
+      f.style.top = (Math.sin(t * Math.PI) * 1.6 - .2) + 'rem';
+      f.style.background = colors[i % colors.length];
+      f.style.animationDelay = (-i * .37) + 's';
+      box.appendChild(f);
+    }
+    document.body.insertBefore(box, document.body.firstChild);
+  }
+
   root.App = { go, step, FLOW };
   document.addEventListener('DOMContentLoaded', () => {
     stage = document.getElementById('stage');
+    buildBunting();
     root.Store.load();
     document.addEventListener('keydown', onKey);
     go(Math.min(root.Store.state.sceneIndex || 0, FLOW.length - 1));

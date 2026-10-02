@@ -4,7 +4,7 @@
   'use strict';
   const h = root.UI.h;
   const W = 1600, H = 3400, GATE_Y = 640, GRAVITY = 1.7, MAX_SPEED = 32, TIMEOUT_FRAMES = 60 * 25;
-  const PALETTE = ['#ff6b6b', '#ffd43b', '#51cf66', '#4dabf7', '#cc5de8', '#ff922b', '#20c997', '#f783ac', '#94d82d', '#748ffc'];
+  const PALETTE = ['#ef6f5e', '#f4b942', '#7cc48a', '#5aa3e0', '#b48ad8', '#f2924a', '#4fbfaa', '#f08fb0', '#a7c957', '#8da0e8'];
 
   // 핀 구간 → 지그재그 경사로 → 회전 막대 를 쌓는다 (짧은 트랙)
   function buildTrack(M) {
@@ -112,6 +112,8 @@
       const colorOf = {}, labelOf = {};
       S.state.players.forEach((p, n) => { colorOf[p.id] = PALETTE[n % PALETTE.length]; labelOf[p.id] = p.short || shortName(p.name); });
       const nameOf = id => (S.player(id) || {}).name || '?';
+      // 상품 이름이 이모지로 시작하지 않으면 🏆/🎁 를 붙인다
+      const withIcon = (prize, r) => (/^\p{Extended_Pictographic}/u.test(prize) ? '' : r === 0 ? '🏆 ' : '🎁 ') + prize;
       let race = null;
 
       function stopRace() {
@@ -125,7 +127,7 @@
       function resultCard(r) {
         const res = S.state.roulette[r];
         return h('div', { class: 'winner' }, [
-          h('div', { class: 'winner-prize' }, (r === 0 ? '🏆 ' : '🎁 ') + res.prize),
+          h('div', { class: 'winner-prize' }, withIcon(res.prize, r)),
           h('div', { class: 'who', style: { color: colorOf[res.id] } }, nameOf(res.id)),
           h('div', { class: 'what' }, res.auto ? '마지막 상품은 자동으로! 🎉' : '당첨! 축하해요 🎉')
         ]);
@@ -150,7 +152,7 @@
       }
 
       const hud = r => h('div', { class: 'roulette-hud' },
-        [(r === 0 ? '🏆 ' : '🎁 ') + (r + 1) + '등  ·  ', h('span', { class: 'gold' }, prizes[r])]);
+        [(r + 1) + '등  ·  ', h('span', { class: 'gold' }, withIcon(prizes[r], r))]);
 
       function play(canvas, pool, r, wrap, status) {
         const me = Object.assign(createRace(M, pool), { camY: 0, raf: 0, r, wrap, status });
@@ -158,7 +160,7 @@
         const ctx = canvas.getContext('2d');
 
         function drawBody(b, color) {
-          ctx.fillStyle = color || (b.label === 'peg' ? '#ffcf5a' : b.label === 'rotor' ? '#f783ac' : '#6c4fb3');
+          ctx.fillStyle = color || (b.label === 'peg' ? '#d38f1f' : b.label === 'rotor' ? '#c8553d' : '#b98a5e');
           ctx.beginPath();
           if (b.circleRadius) ctx.arc(b.position.x, b.position.y, b.circleRadius, 0, Math.PI * 2);
           else b.vertices.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
@@ -175,18 +177,18 @@
           const target = me.started && lead ? Math.min(Math.max(lead.position.y - viewH * 0.55, 0), H - viewH) : 0;
           me.camY += (target - me.camY) * 0.12;
           ctx.setTransform(1, 0, 0, 1, 0, 0);
-          ctx.fillStyle = '#140a24';
+          ctx.fillStyle = '#fbf3e4';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.setTransform(scale, 0, 0, scale, 0, -me.camY * scale);
           const top = me.camY - 60, bottom = me.camY + viewH + 60;
 
           const fy = me.track.finishY;
           for (let x = 0; x < W; x += 40) for (let row = 0; row < 2; row++) {
-            ctx.fillStyle = (x / 40 + row) % 2 ? '#ffffff' : '#222222';
+            ctx.fillStyle = (x / 40 + row) % 2 ? '#ffffff' : '#4a3426';
             ctx.fillRect(x, fy + row * 20, 40, 20);
           }
-          ctx.fillStyle = '#ffcf5a';
-          ctx.font = 'bold 80px "Malgun Gothic", sans-serif';
+          ctx.fillStyle = '#c8553d';
+          ctx.font = 'bold 80px "Gowun Dodum", "Malgun Gothic", sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('🏁 GOAL', W / 2, fy + 120);
@@ -194,7 +196,7 @@
           me.track.bodies.forEach(b => {
             if (b.label !== 'wall' && b.bounds.max.y > top && b.bounds.min.y < bottom) drawBody(b);
           });
-          if (!me.started) drawBody(me.gate, '#ffcf5a');
+          if (!me.started) drawBody(me.gate, '#d38f1f');
 
           me.marbles.forEach(m => {
             const r = m.circleRadius, isLead = me.started && m === lead;
@@ -203,10 +205,10 @@
             ctx.fillStyle = colorOf[m.pid];
             ctx.fill();
             ctx.lineWidth = isLead ? 6 : 2;
-            ctx.strokeStyle = isLead ? '#ffffff' : 'rgba(0,0,0,.45)';
+            ctx.strokeStyle = isLead ? '#4a3426' : 'rgba(74,52,38,.35)';
             ctx.stroke();
-            ctx.fillStyle = '#111';
-            ctx.font = 'bold ' + Math.round(r * 0.8) + 'px "Malgun Gothic", sans-serif';
+            ctx.fillStyle = '#3a2618';
+            ctx.font = 'bold ' + Math.round(r * 0.8) + 'px "Gowun Dodum", "Malgun Gothic", sans-serif';
             ctx.fillText(labelOf[m.pid], m.position.x, m.position.y + 1);
           });
         }
