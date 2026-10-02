@@ -65,7 +65,24 @@ test('rescore: 이전 채점과의 차이만 반영 (다시 채점해도 중복 
   assert.deepEqual(changed, { a1: 0, a2: 0, b1: 2 });
 });
 
+const manifest = {
+  sis: [{ src: 's1.jpg', date: '2012-06-17' }, { src: 's2.jpg', date: '2024-06-02' }, { src: 's3.jpg', date: '2026-05-25' }],
+  hanra: [{ src: 'h1.jpg', date: '2026-01-17' }, { src: 'h2.jpg', date: '2026-01-18' }],
+  cm: [{ src: 'c1.jpg', date: '2025-02-10' }]
+};
+
+test('photosForChapter: 여러 폴더 사진을 기간으로 모아 날짜순 정렬', () => {
+  const got = L.photosForChapter(manifest, { from: '2017', to: '2025' }).map(p => p.src);
+  assert.deepEqual(got, ['s2.jpg', 'c1.jpg']);
+  const now = L.photosForChapter(manifest, { from: '2026', to: '2026' }).map(p => p.src);
+  assert.deepEqual(now, ['h1.jpg', 'h2.jpg', 's3.jpg']);
+});
+
+test('photosForChapter: 폴더로 지정한 챕터, 예전 문자열 목록도 지원', () => {
+  assert.deepEqual(L.photosForChapter({ f: ['a.jpg'] }, { folder: 'f' }).map(p => p.src), ['a.jpg']);
+});
+
 test('chaptersWithPhotos: 사진 없는 챕터 제외', () => {
-  const ch = [{ title: 'x', folder: 'f1' }, { title: 'y', folder: 'f2' }, { title: 'z', folder: 'f3' }];
-  assert.deepEqual(L.chaptersWithPhotos(ch, { f1: ['a.jpg'], f2: [] }).map(c => c.folder), ['f1']);
+  const ch = [{ from: '2009', to: '2016' }, { from: '2017', to: '2018' }, { from: '2026', to: '2026' }];
+  assert.deepEqual(L.chaptersWithPhotos(ch, manifest).map(c => c.from), ['2009', '2026']);
 });

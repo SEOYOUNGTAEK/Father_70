@@ -1,17 +1,26 @@
-// 추억극장 — 챕터 제목 카드 + 켄 번즈 사진 슬라이드
+// 추억극장 — 챕터 제목 카드 + 폴라로이드 사진 슬라이드 (모든 폴더 사진을 기간별로 날짜순 섞음)
 (function (root) {
   'use strict';
   const h = root.UI.h;
   const isVideo = src => /\.mp4$/i.test(src);
   const chapters = arg => root.Logic.chaptersWithPhotos(root.PARTY_CONFIG.memories[arg] || [], root.PHOTOS || {});
 
+  // "2025년 8월 · 태국 치앙마이" 처럼 사진 아래에 붙는 설명
+  function caption(p) {
+    const m = /^(\d{4})-(\d{2})/.exec(p.date || '');
+    const when = m ? m[1] + '년 ' + Number(m[2]) + '월' : '';
+    const label = (root.PARTY_CONFIG.folderLabels || {})[p.folder] || '';
+    return [when, label].filter(Boolean).join(' · ');
+  }
+
   root.Scenes.memories = {
     skip: arg => chapters(arg).length === 0,
     create(stage, arg, opts) {
       const slides = [];
       chapters(arg).forEach(c => {
-        slides.push({ type: 'title', chapter: c });
-        root.PHOTOS[c.folder].forEach(src => slides.push({ type: 'photo', src, chapter: c }));
+        const photos = root.Logic.photosForChapter(root.PHOTOS, c);
+        slides.push({ type: 'title', chapter: c, count: photos.length });
+        photos.forEach(p => slides.push({ type: 'photo', src: p.src, photo: p }));
       });
       let n = 0;
       const render = i => {
@@ -22,7 +31,7 @@
           stage.appendChild(h('div', { class: 'memory-title' }, [
             h('div', { class: 'memory-badge' }, '🎬 추억극장'),
             h('h1', {}, s.chapter.title),
-            h('p', {}, root.PHOTOS[s.chapter.folder].length + '개의 추억')
+            h('p', {}, s.count + '장의 추억')
           ]));
           return;
         }
@@ -31,7 +40,7 @@
           h('div', { class: 'frame kb-' + 'abcd'[(n++) % 4] }, [
             h('div', { class: 'tape' }),
             isVideo(s.src) ? h('video', { src: s.src, autoplay: true, loop: true, playsinline: true, controls: true }) : h('img', { src: s.src, alt: '' }),
-            h('div', { class: 'memory-caption' }, s.chapter.title)
+            h('div', { class: 'memory-caption' }, caption(s.photo))
           ])
         ]));
         const next = slides[i + 1];

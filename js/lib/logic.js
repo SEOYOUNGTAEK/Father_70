@@ -51,11 +51,22 @@
     return out;
   }
 
-  function chaptersWithPhotos(chapters, manifest) {
-    return chapters.filter(c => (manifest[c.folder] || []).length > 0);
+  // 추억극장 챕터의 사진 — folder 가 있으면 그 폴더만, 아니면 모든 폴더에서 from~to 기간(연·월 접두어) 사진을 날짜순으로
+  function photosForChapter(manifest, ch) {
+    const all = [];
+    Object.keys(manifest).forEach(folder => manifest[folder].forEach(e => {
+      const it = typeof e === 'string' ? { src: e, date: '' } : e;
+      all.push({ src: it.src, date: it.date || '', folder });
+    }));
+    const inRange = p => (ch.folder ? p.folder === ch.folder : p.date >= ch.from && p.date <= ch.to + '￿');
+    return all.filter(inRange).sort((a, b) => (ch.folder ? 0 : a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
   }
 
-  const api = { quizPoints, zoomPoints, teamAward, sevenRanking, marblePool, choicePoints, rescore, chaptersWithPhotos };
+  function chaptersWithPhotos(chapters, manifest) {
+    return chapters.filter(c => photosForChapter(manifest, c).length > 0);
+  }
+
+  const api = { quizPoints, zoomPoints, teamAward, sevenRanking, marblePool, choicePoints, rescore, photosForChapter, chaptersWithPhotos };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Logic = api;
 })(this);

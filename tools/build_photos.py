@@ -43,16 +43,32 @@ def find_refs(js_text):
     return set(re.findall(r"assets/photos/([^'\"]+?\.jpg)", js_text))
 
 
-def taken_key(path):
+def exif_date(path):
     from PIL import Image
     try:
         ex = Image.open(path).getexif()
-        d = ex.get_ifd(0x8769).get(36867) or ex.get(306)
-        if d:
-            return str(d)
+        return str(ex.get_ifd(0x8769).get(36867) or ex.get(306) or "")
     except Exception:
-        pass
-    return path.name
+        return ""
+
+
+def normalize_date(raw):
+    """EXIF 날짜('2009:07:09 22:29:08', '2017-08-20 11:35:03:511')를 'YYYY-MM-DD HH:MM' 으로"""
+    m = re.match(r"(\d{4})[:-](\d{2})[:-](\d{2})[ T](\d{2}):(\d{2})", raw or "")
+    return "{}-{}-{} {}:{}".format(*m.groups()) if m else ""
+
+
+def fill_dates(dates, folder_name):
+    """날짜 없는 사진은 목록에서 바로 앞(없으면 뒤) 사진 날짜, 그것도 없으면 폴더 이름의 연도"""
+    out = list(dates)
+    for i, d in enumerate(out):
+        if d:
+            continue
+        prev = next((out[j] for j in range(i - 1, -1, -1) if out[j]), "")
+        nxt = next((dates[j] for j in range(i + 1, len(dates)) if dates[j]), "")
+        m = re.match(r"(\d{4})", folder_name)
+        out[i] = prev or nxt or (m.group(1) + "-01-01 00:00" if m else "")
+    return out
 
 
 def convert(src, dst, px):
@@ -86,14 +102,15 @@ def main():
         if picks.get(folder.name):
             order = [web_name(n) for n in picks[folder.name] if web_name(n) in files]
         else:
-            order = sorted(files, key=lambda w: taken_key(files[w]))
+            order = sorted(files, key=lambda w: normalize_date(exif_date(files[w])) or w)
         ref_here = {r.split("/", 1)[1] for r in refs if r.split("/", 1)[0] == folder.name}
         for w in sorted(set(order) | ref_here):
             if w not in files:
                 print("  ! data에서 참조했지만 없는 사진:", folder.name, w)
                 continue
             convert(files[w], OUT / folder.name / w, REF_PX if w in ref_here else SLIDE_PX)
-        manifest[folder.name] = [f"assets/photos/{folder.name}/{w}" for w in order]
+        dates = fill_dates([normalize_date(exif_date(files[w])) for w in order], folder.name)
+        manifest[folder.name] = [{"src": f"assets/photos/{folder.name}/{w}", "date": d} for w, d in zip(order, dates)]
         print(f"{folder.name}: 슬라이드 {len(order)}장, 참조 {len(ref_here)}장")
 
     OUT.mkdir(parents=True, exist_ok=True)
