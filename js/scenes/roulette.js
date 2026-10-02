@@ -300,7 +300,14 @@
             const total = pool.reduce((s, p) => s + p.count, 0);
             const canvas = h('canvas', {});
             const status = h('div', { class: 'roulette-status' }, pool.length + '명 · 구슬 ' + total + '개 대기 중 · Space 또는 화면 탭으로 출발!');
-            const wrap = h('div', { class: 'roulette' }, [canvas, hud(r), status]);
+            // 범례: 누가 무슨 색 구슬인지 (구슬 많은 순)
+            const legend = h('div', { class: 'legend' }, pool.slice().sort((a, b) => b.count - a.count).map(p =>
+              h('div', { class: 'legend-row' }, [
+                h('span', { class: 'legend-dot', style: { background: colorOf[p.id] } }, labelOf[p.id]),
+                h('span', { class: 'legend-name' }, nameOf(p.id)),
+                h('span', { class: 'legend-count' }, '×' + p.count)
+              ])));
+            const wrap = h('div', { class: 'roulette' }, [canvas, hud(r), legend, status]);
             wrap.addEventListener('click', () => ctl.key({ key: ' ' })); // 폰: 탭으로 출발/다음
             stage.appendChild(wrap);
             play(canvas, pool, r, wrap, status);
