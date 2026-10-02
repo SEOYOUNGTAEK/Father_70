@@ -22,7 +22,7 @@
             h('h1', {}, '🔍 확대 사진 퀴즈'),
             h('ul', { class: 'rules' }, [
               h('li', {}, '아주 크게 확대한 사진이 점점 작아져요'),
-              h('li', {}, '무엇인지 알면 먼저 외치기!'),
+              h('li', {}, '오른쪽 질문의 정답을 알면 먼저 외치기!'),
               h('li', {}, '빨리 맞힐수록 🪙3 → 🪙2 → 🪙1 · ⭐ 아이는 2배')
             ])
           ]));
@@ -35,11 +35,19 @@
         const img = h('img', { class: 'zoom-img', src: q.photo, alt: '', style: {
           transformOrigin: (q.cx * 100) + '% ' + (q.cy * 100) + '%', transform: 'scale(' + from + ')'
         } });
+        // 왼쪽 사진, 오른쪽에 처음부터 질문을 크게
         stage.appendChild(h('div', { class: 'zoom' }, [
-          h('div', { class: 'q-head' }, 'Q' + (s.n + 1) + ' / ' + Q.length + (reveal ? '' : '  ·  단계 ' + s.stage + ' / ' + SCALES.length + '  ·  지금 맞히면 🪙' + points)),
           h('div', { class: 'zoom-frame' + (reveal ? ' revealed' : '') }, img),
-          reveal ? h('div', { class: 'zoom-answer' }, '정답: ' + q.answer) : null,
-          root.UI.awardBar('zoom-' + s.n, () => points)
+          h('div', { class: 'zoom-side' }, [
+            h('div', { class: 'q-head' }, 'Q' + (s.n + 1) + ' / ' + Q.length),
+            h('h1', { class: 'zoom-q' }, q.q || '이건 무엇일까요?'),
+            reveal ? h('div', { class: 'zoom-answer' }, '정답! ' + q.answer)
+              : h('div', { class: 'zoom-stage' }, [
+                h('div', { class: 'zoom-dots' }, SCALES.map((_, k) => h('span', { class: k < s.stage ? 'on' : '' }))),
+                '지금 맞히면 🪙' + points
+              ]),
+            root.UI.awardBar('zoom-' + s.n, () => points)
+          ])
         ]));
         requestAnimationFrame(() => requestAnimationFrame(() => { img.style.transform = 'scale(' + scale + ')'; }));
         lastScale = scale; lastN = s.n;

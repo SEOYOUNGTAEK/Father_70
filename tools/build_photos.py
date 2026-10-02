@@ -4,6 +4,7 @@
 - photos/베스트컷_목록.txt 의 '폴더: X' 아래 파일만 슬라이드에 사용, 없으면 폴더 전체(촬영시각 순)
 - data/*.js 가 참조한 사진은 슬라이드에 없어도 변환 (확대퀴즈용 등은 2560px)
 - EXIF(위치정보 포함)는 저장하지 않음
+- 동영상(.mp4)은 그대로 복사해 슬라이드에 넣음
 사용: python tools/build_photos.py
 """
 import json
@@ -15,12 +16,13 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "photos"
 OUT = ROOT / "assets" / "photos"
 EXTS = {".jpg", ".jpeg", ".png"}
+VIDEO_EXTS = {".mp4"}
 SLIDE_PX, REF_PX, QUALITY = 1920, 2560, 82
 
 
 def web_name(name):
     stem = re.sub(r"[^a-z0-9_-]+", "_", Path(name).stem.lower()).strip("_")
-    return stem + ".jpg"
+    return stem + (".mp4" if Path(name).suffix.lower() in VIDEO_EXTS else ".jpg")
 
 
 def parse_picks(text):
@@ -31,7 +33,7 @@ def parse_picks(text):
             folder = m.group(1)
             picks.setdefault(folder, [])
             continue
-        m = re.match(r"\s*(\S+\.(?:jpe?g|png))\b", line, re.I)
+        m = re.match(r"\s*(\S+\.(?:jpe?g|png|mp4))\b", line, re.I)
         if m and folder:
             picks[folder].append(m.group(1))
     return picks
@@ -54,6 +56,10 @@ def taken_key(path):
 
 
 def convert(src, dst, px):
+    if src.suffix.lower() in VIDEO_EXTS:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dst)
+        return
     from PIL import Image, ImageOps
     im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
     im.thumbnail((px, px), Image.LANCZOS)
@@ -74,7 +80,7 @@ def main():
                 shutil.rmtree(d)
     manifest = {}
     for folder in sorted(d for d in SRC.iterdir() if d.is_dir() and not d.name.startswith("_")):
-        files = {web_name(f.name): f for f in folder.iterdir() if f.suffix.lower() in EXTS}
+        files = {web_name(f.name): f for f in folder.iterdir() if f.suffix.lower() in EXTS | VIDEO_EXTS}
         if not files:
             continue
         if picks.get(folder.name):

@@ -22,15 +22,14 @@
     }, emptyProgress(players));
   }
 
-  // config.js 가 바뀌면(version 증가) 명단·팀 이름·오프닝 문구·상품을 저장된 상태에도 반영 — 코인 등 진행 기록은 유지
+  // config.js 가 바뀌면(version 증가) 명단·팀 이름·오프닝 문구·상품을 반영하고, 게임 기록(코인 등)은 새로 시작
   function migrate(saved, cfg) {
     if (saved.configVersion === cfg.version) return saved;
     saved.players = cfg.players.map(p => Object.assign({}, p));
     saved.prizes = cfg.prizes.slice();
     saved.teamNames = { A: cfg.teams.A.name, B: cfg.teams.B.name };
     saved.heroTitle = cfg.heroTitle;
-    saved.roulette = [];
-    saved.players.forEach(p => { if (saved.coins[p.id] == null) saved.coins[p.id] = 0; });
+    Object.assign(saved, emptyProgress(saved.players));
     saved.configVersion = cfg.version;
     return saved;
   }
