@@ -200,6 +200,12 @@ h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; }
 /* 마블 룰렛 */
 .roulette { position: fixed; inset: 0; }
 .roulette canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.roulette.slowmo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 12rem rgba(200, 85, 61, .35); animation: heartbeat 1.1s ease-in-out infinite;
+}
+@keyframes heartbeat { 50% { box-shadow: inset 0 0 16rem rgba(200, 85, 61, .5); } }
+.roulette.slowmo .roulette-status { font-size: 2.2rem; color: var(--accent); font-weight: 700; }
 .roulette-hud {
   position: absolute; top: 1rem; left: 50%; transform: translateX(-50%); white-space: nowrap;
   font-size: 2.3rem; font-family: var(--serif); font-weight: 700; padding: .5rem 1.8rem; border-radius: 2rem;

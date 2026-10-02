@@ -3,17 +3,19 @@
 (function (root) {
   'use strict';
   const h = root.UI.h;
-  const W = 1600, H = 3400, GATE_Y = 640, GRAVITY = 1.7, MAX_SPEED = 32, TIMEOUT_FRAMES = 60 * 25;
+  const W = 1600, H = 5600, GATE_Y = 640, GRAVITY = 1.7, MAX_SPEED = 32, TIMEOUT_FRAMES = 60 * 45;
+  const SLOW_SCALE = 0.22, ZOOM_IN = 1.9; // 결승 직전 슬로모션 배속과 카메라 확대 배율
   const PALETTE = ['#ef6f5e', '#f4b942', '#7cc48a', '#5aa3e0', '#b48ad8', '#f2924a', '#4fbfaa', '#f08fb0', '#a7c957', '#8da0e8'];
 
-  // 핀 구간 → 지그재그 경사로 → 회전 막대 를 쌓는다 (짧은 트랙)
+  // 핀 구간 → 지그재그 경사로 → 회전 막대 를 쌓고, 마지막에 깔때기 + 회전 막대 → 결승선
   function buildTrack(M) {
     const B = M.Bodies, bodies = [], rotors = [];
     const wall = { isStatic: true, restitution: 0.3, friction: 0, label: 'wall' };
     bodies.push(B.rectangle(-40, H / 2, 80, H * 1.2, wall), B.rectangle(W + 40, H / 2, 80, H * 1.2, wall),
       B.rectangle(W / 2, H + 40, W * 1.2, 80, wall));
     let y = 760, k = 0;
-    while (y < H - 700) {
+    const SIZES = [625, 760, 400];
+    while (y + SIZES[k % 3] < H - 1300) {
       const kind = k % 3;
       if (kind === 0) {
         for (let r = 0; r < 5; r++)
@@ -35,7 +37,15 @@
       }
       k++;
     }
-    return { bodies, rotors, finishY: H - 220 };
+    // 결승 깔때기: 가운데 좁은 구멍으로 한 줄로 몰리게
+    const fy = H - 1050;
+    bodies.push(B.rectangle(W * 0.225, fy, W * 0.5, 34, { isStatic: true, angle: 0.35, friction: 0.0005, label: 'ramp' }));
+    bodies.push(B.rectangle(W * 0.775, fy, W * 0.5, 34, { isStatic: true, angle: -0.35, friction: 0.0005, label: 'ramp' }));
+    const last = B.rectangle(W / 2, H - 720, 260, 22, { isStatic: true, label: 'rotor' });
+    last.spin = 0.06;
+    rotors.push(last);
+    bodies.push(last);
+    return { bodies, rotors, finishY: H - 380, slowY: fy + 150 };
   }
 
   function shuffle(a) {
@@ -66,7 +76,7 @@
     const gate = M.Bodies.rectangle(W / 2, GATE_Y, W, 20, { isStatic: true, label: 'gate' });
     const marbles = spawnMarbles(M, pool);
     M.Composite.add(engine.world, track.bodies.concat([gate], marbles));
-    return { engine, track, gate, marbles, winner: null, started: false, frames: 0 };
+    return { engine, track, gate, marbles, winner: null, started: false, slow: false, frames: 0 };
   }
 
   function startRace(M, race) {
@@ -79,7 +89,8 @@
   // 한 프레임 진행. 이번 프레임에 당첨자가 정해지면 그 id 를 돌려준다.
   function tick(M, race) {
     M.Engine.update(race.engine, 1000 / 60);
-    race.track.rotors.forEach(b => M.Body.setAngle(b, b.angle + b.spin));
+    const ts = race.engine.timing.timeScale; // 슬로모션 중엔 회전 막대도 같이 느리게
+    race.track.rotors.forEach(b => M.Body.setAngle(b, b.angle + b.spin * ts));
     if (!race.started || race.winner) return null;
     race.frames++;
     race.marbles.forEach(m => {
@@ -93,6 +104,11 @@
       });
     }
     const lead = leaderOf(race.marbles);
+    // 선두가 깔때기에 들어서면 슬로모션
+    if (!race.slow && lead.position.y > race.track.slowY) {
+      race.slow = true;
+      race.engine.timing.timeScale = SLOW_SCALE;
+    }
     // 골인했거나, 너무 오래 걸리면 제일 앞선 구슬이 당첨
     if (lead.position.y > race.track.finishY || race.frames > TIMEOUT_FRAMES) race.winner = lead.pid;
     return race.winner;
@@ -155,7 +171,7 @@
         [(r + 1) + '등  ·  ', h('span', { class: 'gold' }, withIcon(prizes[r], r))]);
 
       function play(canvas, pool, r, wrap, status) {
-        const me = Object.assign(createRace(M, pool), { camY: 0, raf: 0, r, wrap, status });
+        const me = Object.assign(createRace(M, pool), { camX: 0, camY: 0, zoom: 1, raf: 0, r, wrap, status, slowShown: false });
         race = me;
         const ctx = canvas.getContext('2d');
 
@@ -173,13 +189,18 @@
             canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
           }
           const lead = leaderOf(me.marbles);
-          const scale = canvas.width / W, viewH = canvas.height / scale;
-          const target = me.started && lead ? Math.min(Math.max(lead.position.y - viewH * 0.55, 0), H - viewH) : 0;
-          me.camY += (target - me.camY) * 0.12;
+          // 슬로모션이면 선두 쪽으로 확대
+          me.zoom += ((me.slow ? ZOOM_IN : 1) - me.zoom) * 0.05;
+          const scale = canvas.width / W * me.zoom, viewW = W / me.zoom, viewH = canvas.height / scale;
+          const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+          const targetY = me.started && lead ? clamp(lead.position.y - viewH * (me.slow ? 0.5 : 0.55), 0, H - viewH) : 0;
+          const targetX = lead ? clamp(lead.position.x - viewW / 2, 0, W - viewW) : 0;
+          me.camY += (targetY - me.camY) * 0.12;
+          me.camX += (targetX - me.camX) * 0.1;
           ctx.setTransform(1, 0, 0, 1, 0, 0);
           ctx.fillStyle = '#fbf3e4';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.setTransform(scale, 0, 0, scale, 0, -me.camY * scale);
+          ctx.setTransform(scale, 0, 0, scale, -me.camX * scale, -me.camY * scale);
           const top = me.camY - 60, bottom = me.camY + viewH + 60;
 
           const fy = me.track.finishY;
@@ -224,6 +245,11 @@
             const had = me.winner;
             tick(M, me); // 당첨 뒤에도 구슬은 계속 굴러가게
             if (!had && me.winner) finish(me);
+          }
+          if (me.slow && !me.slowShown && !me.winner) {
+            me.slowShown = true;
+            wrap.classList.add('slowmo');
+            status.textContent = '두근두근… 🥁 결승 직전!';
           }
           draw();
           me.raf = requestAnimationFrame(frame);
