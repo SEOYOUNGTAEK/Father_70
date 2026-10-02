@@ -47,6 +47,24 @@ test('marblePool: 최소 1개, 당첨자 제외', () => {
   assert.deepEqual(pool, [{ id: 'a1', count: 4 }, { id: 'a2', count: 1 }]);
 });
 
+test('choicePoints: 맞히면 1, 아이가 고르면 2, 틀리거나 미선택·정답 미정이면 0', () => {
+  assert.equal(L.choicePoints({ pick: 2, kid: false }, 2), 1);
+  assert.equal(L.choicePoints({ pick: 2, kid: true }, 2), 2);
+  assert.equal(L.choicePoints({ pick: 1, kid: true }, 2), 0);
+  assert.equal(L.choicePoints(undefined, 2), 0);
+  assert.equal(L.choicePoints({ pick: 2, kid: false }, null), 0);
+});
+
+test('rescore: 이전 채점과의 차이만 반영 (다시 채점해도 중복 없음)', () => {
+  const coins = { a1: 0, a2: 0, b1: 0 };
+  const once = L.rescore(players, coins, {}, { A: 1, B: 0 });
+  assert.deepEqual(once, { a1: 1, a2: 1, b1: 0 });
+  const again = L.rescore(players, once, { A: 1, B: 0 }, { A: 1, B: 0 });
+  assert.deepEqual(again, once);
+  const changed = L.rescore(players, once, { A: 1, B: 0 }, { A: 0, B: 2 });
+  assert.deepEqual(changed, { a1: 0, a2: 0, b1: 2 });
+});
+
 test('chaptersWithPhotos: 사진 없는 챕터 제외', () => {
   const ch = [{ title: 'x', folder: 'f1' }, { title: 'y', folder: 'f2' }, { title: 'z', folder: 'f3' }];
   assert.deepEqual(L.chaptersWithPhotos(ch, { f1: ['a.jpg'], f2: [] }).map(c => c.folder), ['f1']);

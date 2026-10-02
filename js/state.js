@@ -6,7 +6,8 @@
   function emptyProgress(players) {
     const coins = {};
     players.forEach(p => { coins[p.id] = 0; });
-    return { coins, awarded: {}, seven: {}, sevenPaid: false, roulette: [] };
+    // lifePicks[n] = { A: {pick, kid}, B: {...} }, lifeJudge[n] = 판정 문제의 정답, lifeScored[n] = { A: 점수, B: 점수 }
+    return { coins, awarded: {}, seven: {}, sevenPaid: false, roulette: [], lifePicks: {}, lifeJudge: {}, lifeScored: {} };
   }
 
   function defaults(cfg) {
@@ -21,12 +22,13 @@
     }, emptyProgress(players));
   }
 
-  // config.js 가 바뀌면(version 증가) 명단·팀 이름·상품을 저장된 상태에도 반영 — 코인 등 진행 기록은 유지
+  // config.js 가 바뀌면(version 증가) 명단·팀 이름·오프닝 문구·상품을 저장된 상태에도 반영 — 코인 등 진행 기록은 유지
   function migrate(saved, cfg) {
     if (saved.configVersion === cfg.version) return saved;
     saved.players = cfg.players.map(p => Object.assign({}, p));
     saved.prizes = cfg.prizes.slice();
     saved.teamNames = { A: cfg.teams.A.name, B: cfg.teams.B.name };
+    saved.heroTitle = cfg.heroTitle;
     saved.roulette = [];
     saved.players.forEach(p => { if (saved.coins[p.id] == null) saved.coins[p.id] = 0; });
     saved.configVersion = cfg.version;
@@ -40,6 +42,7 @@
       try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) { saved = null; }
       const cfg = root.PARTY_CONFIG;
       this.state = saved && saved.players ? migrate(saved, cfg) : defaults(cfg);
+      ['lifePicks', 'lifeJudge', 'lifeScored'].forEach(k => { if (!this.state[k]) this.state[k] = {}; });
       this.save();
     },
     save() {

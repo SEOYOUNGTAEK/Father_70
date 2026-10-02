@@ -261,7 +261,7 @@
         S.state.roulette[me.r] = { prize: prizes[me.r], id: me.winner };
         S.save();
         me.wrap.appendChild(resultCard(me.r));
-        me.status.textContent = 'Space / → 다음 상품';
+        me.status.textContent = 'Space / 탭 / → 다음 상품';
       }
 
       function roundStep(r) {
@@ -273,8 +273,9 @@
           } else {
             const total = pool.reduce((s, p) => s + p.count, 0);
             const canvas = h('canvas', {});
-            const status = h('div', { class: 'roulette-status' }, pool.length + '명 · 구슬 ' + total + '개 대기 중 · Space 로 출발!');
+            const status = h('div', { class: 'roulette-status' }, pool.length + '명 · 구슬 ' + total + '개 대기 중 · Space 또는 화면 탭으로 출발!');
             const wrap = h('div', { class: 'roulette' }, [canvas, hud(r), status]);
+            wrap.addEventListener('click', () => ctl.key({ key: ' ' })); // 폰: 탭으로 출발/다음
             stage.appendChild(wrap);
             play(canvas, pool, r, wrap, status);
             return;

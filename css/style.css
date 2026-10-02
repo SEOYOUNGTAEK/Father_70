@@ -152,16 +152,42 @@ h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; }
 .q-head { font-size: 1.5rem; color: var(--accent); font-weight: 700; }
 .q-text { font-size: 3.5rem; line-height: 1.35; }
 .q-body { display: flex; gap: 2.8rem; align-items: center; }
-.q-photo { max-height: 48vh; max-width: 36vw; background: #fff; padding: .7rem .7rem 2rem; border-radius: .3rem; box-shadow: var(--shadow); transform: rotate(-1.5deg); }
+.q-photo { max-height: 40vh; max-width: 34vw; background: #fff; padding: .7rem .7rem 2rem; border-radius: .3rem; box-shadow: var(--shadow); transform: rotate(-1.5deg); }
 .choices { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
 .choice {
-  font-size: 2.5rem; padding: 1.3rem 1.8rem; border-radius: 1.4rem; background: var(--card);
+  font-size: 2.3rem; padding: 1.1rem 1.6rem; border-radius: 1.4rem; background: var(--card);
   border: .18rem solid var(--line); box-shadow: 0 .3rem .8rem rgba(110, 72, 40, .08); transition: .4s;
 }
 .choice b { color: var(--accent); }
 .choice.correct { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.04); box-shadow: 0 .8rem 2rem rgba(95, 154, 114, .4); }
 .choice.correct b { color: #fff; }
 .choice.dim { opacity: .35; }
+.choice { position: relative; }
+.choice.judgeable { cursor: pointer; }
+.choice.judgeable:hover { border-color: var(--accent); }
+.pick-tags { position: absolute; top: -.9rem; right: 1rem; display: flex; gap: .4rem; }
+.pick-tag { font-size: 1.1rem; color: #fff; padding: .15rem .7rem; border-radius: 2rem; box-shadow: 0 .2rem .5rem rgba(0, 0, 0, .15); }
+.pick-row { display: flex; gap: 2rem; justify-content: center; }
+.pick-panel {
+  display: flex; align-items: center; gap: 1.2rem; padding: .7rem 1.4rem; border-radius: 1.4rem;
+  background: var(--card); border: .2rem solid; box-shadow: var(--shadow);
+}
+.pick-team { font-family: var(--serif); font-weight: 700; font-size: 1.8rem; min-width: 9rem; display: flex; flex-direction: column; line-height: 1.2; }
+.pick-result { font-family: var(--sans); font-size: 1.3rem; color: var(--ink-soft); }
+.pick-result.ok { color: var(--good); font-weight: 700; }
+.pick-btns { display: flex; gap: .5rem; }
+.pick-btn {
+  font: inherit; font-size: 2rem; width: 3.8rem; height: 3.8rem; border-radius: 50%; cursor: pointer;
+  background: #fff; color: var(--ink); border: .18rem solid var(--line);
+}
+.pick-btn:hover { border-color: var(--ink-soft); }
+.pick-btn.on { color: #fff; transform: scale(1.08); }
+.kid-toggle {
+  font: inherit; font-size: 1.2rem; padding: .4rem .9rem; border-radius: 2rem; cursor: pointer;
+  background: #fff; color: var(--ink-soft); border: .15rem dashed var(--line);
+}
+.kid-toggle.on { background: var(--gold-soft); color: var(--ink); border: .15rem solid var(--gold); font-weight: 700; }
+.judge.small { font-size: 1.5rem; }
 .judge { font-size: 2.4rem; color: var(--accent); text-align: center; font-family: var(--serif); font-weight: 700; }
 .award-bar { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; align-items: center; min-height: 3.2rem; }
 .award-done { font-size: 1.6rem; color: var(--good); font-weight: 700; }
@@ -264,3 +290,18 @@ h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; }
 .setup-btns, .jump { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }
 .runner-up { font-size: 2rem; margin-top: 1.4rem; color: var(--ink-soft); }
 .warn { font-size: 1.6rem; color: #b5452f; margin: 1rem 0 0; }
+
+/* 폰·태블릿용 화면 버튼 — ◀ ▶ 는 양쪽 가장자리, 나머지는 오른쪽 위 */
+.nav { position: fixed; inset: 0; z-index: 45; pointer-events: none; transition: opacity .4s; }
+body.idle .nav { opacity: 0; }
+.nav-btn {
+  position: absolute; pointer-events: auto; font: inherit; font-size: max(1.6rem, 18px);
+  width: max(3.6rem, 44px); height: max(3.6rem, 44px); border-radius: 50%; border: 0; cursor: pointer; touch-action: manipulation;
+  background: rgba(200, 85, 61, .85); color: #fff; box-shadow: var(--shadow);
+}
+.nav-btn.prev { left: max(1rem, 8px); top: 50%; transform: translateY(-50%); }
+.nav-btn.next { right: max(1rem, 8px); top: 50%; transform: translateY(-50%); }
+.nav-btn.small { background: rgba(255, 250, 241, .92); color: var(--ink); border: 2px solid var(--line); font-size: max(1.3rem, 16px); top: max(4.6rem, 40px); }
+.nav-btn.board { right: calc(max(1rem, 8px) + 2 * (max(3.6rem, 44px) + 8px)); }
+.nav-btn.gear { right: calc(max(1rem, 8px) + max(3.6rem, 44px) + 8px); }
+.nav-btn.full { right: max(1rem, 8px); }

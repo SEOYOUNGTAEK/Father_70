@@ -4,7 +4,7 @@
   const FLOW = [
     { scene: 'opening', label: '오프닝' },
     { scene: 'memories', arg: 0, label: '추억극장 ①' },
-    { scene: 'quizLife', label: '게임1 · 아빠 인생 퀴즈' },
+    { scene: 'quizLife', label: '게임1 · 할아버지 인생 퀴즈' },
     { scene: 'memories', arg: 1, label: '추억극장 ②' },
     { scene: 'quizZoom', label: '게임2 · 확대 사진 퀴즈' },
     { scene: 'memories', arg: 2, label: '추억극장 ③' },
@@ -73,6 +73,50 @@
     document.body.insertBefore(box, document.body.firstChild);
   }
 
+  // 폰·태블릿용 화면 버튼 — 움직임이 없으면 숨었다가 터치/마우스로 다시 나타남
+  function buildNav() {
+    const h = root.UI.h, setup = root.Scenes.setup;
+    const nav = h('div', { class: 'nav' }, [
+      h('button', { class: 'nav-btn prev', title: '이전', onclick: () => step(-1) }, '◀'),
+      h('button', { class: 'nav-btn small board', title: '코인 현황', onclick: () => root.UI.toggleScoreboard() }, '🪙'),
+      h('button', { class: 'nav-btn small gear', title: '설정', onclick: () => setup.open(FLOW, go) }, '⚙'),
+      h('button', { class: 'nav-btn small full', title: '전체화면', onclick: toggleFullscreen }, '⛶'),
+      h('button', { class: 'nav-btn next', title: '다음', onclick: () => step(1) }, '▶')
+    ]);
+    document.body.appendChild(nav);
+    let timer = 0;
+    const wake = () => {
+      document.body.classList.remove('idle');
+      clearTimeout(timer);
+      timer = setTimeout(() => document.body.classList.add('idle'), 3000);
+    };
+    ['pointermove', 'pointerdown', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, wake, { passive: true }));
+    wake();
+  }
+
+  // 좌우로 밀어서 넘기기
+  function enableSwipe() {
+    let sx = 0, sy = 0, tracking = false;
+    document.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      tracking = e.touches.length === 1 && !e.target.closest('input, textarea, select, .setup, .scoreboard');
+      sx = t.clientX; sy = t.clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      if (!tracking) return;
+      const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
+  // 세로로 든 폰이면 가로 회전 안내
+  function rotateHint() {
+    const portrait = matchMedia('(orientation: portrait) and (pointer: coarse)');
+    const show = () => { if (portrait.matches) root.UI.toast('📱 가로로 돌리면 더 크게 보여요'); };
+    show();
+    portrait.addEventListener('change', show);
+  }
+
   root.App = { go, step, FLOW };
   document.addEventListener('DOMContentLoaded', () => {
     stage = document.getElementById('stage');
@@ -80,5 +124,8 @@
     root.Store.load();
     document.addEventListener('keydown', onKey);
     go(Math.min(root.Store.state.sceneIndex || 0, FLOW.length - 1));
+    buildNav();
+    enableSwipe();
+    rotateHint();
   });
 })(this);

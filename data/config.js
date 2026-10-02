@@ -1,8 +1,8 @@
 // 행사 기본 설정 — 현장에서는 G 키(설정 화면)로도 바꿀 수 있어요.
 // version 을 올리면 이미 저장된 브라우저에도 아래 참가자 명단이 새로 적용돼요(코인은 유지).
 window.PARTY_CONFIG = {
-  version: 5,
-  heroTitle: '아빠의 칠순을 진심으로 축하합니다',
+  version: 6,
+  heroTitle: '할아버지의 칠순을 진심으로 축하합니다',
   // short: 마블 룰렛 구슬에 쓰는 두 글자 (없으면 세 글자 이름의 뒤 두 글자)
   players: [
     { id: 'gpa',    name: '할아버지', short: '할배', team: 'A', kid: false },

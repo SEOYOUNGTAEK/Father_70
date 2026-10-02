@@ -35,11 +35,27 @@
       .map(p => ({ id: p.id, count: Math.max(1, coins[p.id] || 0) }));
   }
 
+  // 팀이 고른 보기의 점수 — sel = { pick, kid }, answer 가 null 이면 아직 판정 전
+  function choicePoints(sel, answer) {
+    if (!sel || sel.pick == null || answer == null || sel.pick !== answer) return 0;
+    return quizPoints(1, sel.kid);
+  }
+
+  // 팀별 점수가 prev → next 로 바뀌었을 때 차이만큼만 코인 반영
+  function rescore(players, coins, prev, next) {
+    let out = coins;
+    ['A', 'B'].forEach(t => {
+      const d = (next[t] || 0) - (prev[t] || 0);
+      if (d) out = teamAward(players, out, t, d);
+    });
+    return out;
+  }
+
   function chaptersWithPhotos(chapters, manifest) {
     return chapters.filter(c => (manifest[c.folder] || []).length > 0);
   }
 
-  const api = { quizPoints, zoomPoints, teamAward, sevenRanking, marblePool, chaptersWithPhotos };
+  const api = { quizPoints, zoomPoints, teamAward, sevenRanking, marblePool, choicePoints, rescore, chaptersWithPhotos };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Logic = api;
 })(this);
