@@ -16,6 +16,7 @@ OUT = ROOT / "print"
 FONT_DIR = ROOT / "tools" / ".fonts"
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/gowunbatang/"
 W, H = 2480, 3508  # A4 300dpi
+MARGIN = 130  # 바깥 흰 여백(약 11mm) — 프린터가 못 찍는 가장자리가 생겨도 흰 테두리로 자연스럽게
 INK, SOFT = (52, 36, 26), (120, 96, 76)
 GOLD_DARK, GOLD, GOLD_LIGHT = (138, 98, 34), (190, 145, 60), (236, 204, 128)
 SEAL_RED = (190, 40, 36)
@@ -99,12 +100,16 @@ def paper(d_im):
     vign = Image.radial_gradient("L").resize((W, H)).point(lambda v: max(0, v - 90) * 1.1)
     base = Image.composite(edge, base, vign)
     noise = Image.effect_noise((W // 2, H // 2), 22).resize((W, H)).convert("RGB")
-    return Image.blend(base, noise, 0.035)
+    base = Image.blend(base, noise, 0.035)
+    sheet = Image.new("RGB", (W, H), (255, 255, 255))  # 테두리 밖은 흰 종이 그대로
+    box = (MARGIN, MARGIN, W - MARGIN, H - MARGIN)
+    sheet.paste(base.crop(box), box[:2])
+    return sheet
 
 
 def guilloche_frame(d):
     """금색 이중선 사이에 서로 엇갈린 물결무늬"""
-    o, band, inner = 100, 150, 268
+    o, band, inner = MARGIN, 150, MARGIN + 168
     d.rectangle([o, o, W - o, H - o], outline=GOLD_DARK, width=16)
     d.rectangle([o + 26, o + 26, W - o - 26, H - o - 26], outline=GOLD, width=4)
     cy_top, cy_bot, cx_l, cx_r = o + 26 + band // 2 - 8, H - o - 26 - band // 2 + 8, o + 26 + band // 2 - 8, W - o - 26 - band // 2 + 8
@@ -263,12 +268,14 @@ def main():
         im.save(OUT / name, dpi=(300, 300))
         pages.append(im)
         print("저장:", OUT / name)
-    pdf = OUT / "상장_전체_인쇄용.pdf"
-    try:
-        pages[0].save(pdf, save_all=True, append_images=pages[1:], resolution=300)
-    except PermissionError:  # PDF 뷰어에서 열려 있으면 다른 이름으로
-        pdf = OUT / "상장_전체_인쇄용_새버전.pdf"
-        pages[0].save(pdf, save_all=True, append_images=pages[1:], resolution=300)
+    # PDF 뷰어에서 열려 있으면 덮어쓸 수 없으니 _2, _3 … 새 이름으로
+    for n in range(1, 20):
+        pdf = OUT / ("상장_전체_인쇄용.pdf" if n == 1 else f"상장_전체_인쇄용_{n}.pdf")
+        try:
+            pages[0].save(pdf, save_all=True, append_images=pages[1:], resolution=300)
+            break
+        except PermissionError:
+            continue
     print("저장:", pdf)
 
 
