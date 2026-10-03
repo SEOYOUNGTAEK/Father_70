@@ -59,7 +59,7 @@
 
 ## 상장 인쇄
 
-`data/certificates.js` 문구를 고친 뒤 `python tools/make_certificates.py` → `print/` 폴더에 A4 세로 300dpi PNG 2장과 PDF 가 생겨요(날짜는 손으로 쓰는 칸). 화면 엔딩도 같은 문구를 써요.
+`data/certificates.js` 문구를 고친 뒤 `python tools/make_certificates.py` → `print/` 폴더에 A4 세로 300dpi PNG 2장과 PDF 가 생겨요(금색 기요셰 테두리·메달·직인, 날짜는 certificates.js 의 date). 화면 엔딩도 같은 문구를 써요.
 
 ## 새 버전 올릴 때
 

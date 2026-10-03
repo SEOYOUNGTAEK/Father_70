@@ -15,7 +15,7 @@
         h('div', { class: 'cert-title' }, c.title),
         h('div', { class: 'cert-to' }, c.to + ' 귀하'),
         h('p', { class: 'cert-body' }, c.body),
-        h('div', { class: 'cert-date' }, today()),
+        h('div', { class: 'cert-date' }, c.date || today()),
         h('div', { class: 'cert-from' }, [c.from, h('span', { class: 'cert-seal' }, c.seal || '손주')])
       ])
     ]);
