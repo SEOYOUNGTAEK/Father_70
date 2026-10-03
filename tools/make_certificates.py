@@ -77,11 +77,18 @@ def draw_certificate(c):
     left, right = 330, W - 330
     d.text((left, 1260), c["to"] + " 귀하", font=font(True, 110), fill=INK, anchor="ls")
 
-    bf = font(False, 116)
-    y = 1560
-    for line in wrap(c["body"], right - left, lambda t: d.textlength(t, font=bf)):
+    # 본문이 길면 글씨를 줄여 날짜 줄 위에 들어가게
+    top, limit = 1560, H - 960
+    for size in (116, 108, 100, 94, 88, 82):
+        bf = font(False, size)
+        lines = wrap(c["body"], right - left, lambda t: d.textlength(t, font=bf))
+        step = int(size * 1.85)
+        if top + (len(lines) - 1) * step <= limit:
+            break
+    y = top
+    for line in lines:
         d.text((left, y), line, font=bf, fill=INK, anchor="ls")
-        y += 215
+        y += step
 
     d.text((cx, H - 820), "2026년      월      일", font=font(False, 84), fill=SOFT, anchor="mm")
 
