@@ -9,7 +9,7 @@
     { scene: 'quizZoom', label: '게임2 · 확대 사진 퀴즈' },
     { scene: 'memories', arg: 2, label: '추억극장 ③' },
     { scene: 'seven', label: '게임3 · 7초 맞추기' },
-    { scene: 'roulette', label: '마블 룰렛 시상식' },
+    { scene: 'roulette', label: '상품 시상식' },
     { scene: 'ending', label: '엔딩' }
   ];
   let stage, current = null, index = 0;

@@ -17,7 +17,7 @@
           h('ul', { class: 'rules' }, [
             h('li', {}, '칠순이니까 7초! 한 명씩 나와요'),
             h('li', {}, '올라가는 초시계를 보고 7.00초에 직접 멈추기!'),
-            h('li', {}, '시작·멈춤은 본인이 스페이스 또는 화면 클릭'),
+            h('li', {}, '본인이 화면을 터치해서 시작 → 한 번 더 터치해서 멈춤'),
             h('li', {}, '1등 🪙3 · 2등 🪙2 · 3등 🪙1'),
             h('li', {}, '정확히 7초(±0.05)면 잭팟 🪙7 !')
           ])
@@ -39,13 +39,19 @@
             h('p', {}, jackpot ? '🎉 잭팟! 거의 정확히 7초!' : (d > 0 ? '+' : '') + fmt(d) + '초 차이')
           ]);
         } else {
-          body = h('div', {}, [h('div', { class: 'big-num dim' }, '0.00'), h('p', {}, '준비되면 스페이스 또는 클릭!')]);
+          body = h('div', {}, [h('div', { class: 'big-num dim' }, '0.00'), h('p', {}, '준비되면 화면을 터치!')]);
         }
-        stage.appendChild(h('div', { class: 'seven seven-player', onclick: toggle }, [
+        // 화면 전체가 터치 버튼 — 손가락이 닿는 순간(pointerdown) 시작·멈춤해서 기록이 정확하게
+        const redo = res != null && !startedAt && !S.state.sevenPaid
+          ? h('button', { class: 'btn ghost redo-btn', onpointerdown: e => e.stopPropagation(), onclick: e => {
+            e.stopPropagation(); delete S.state.seven[p.id]; S.save(); render(ctl.index());
+          } }, '↺ 다시 하기') : null;
+        stage.appendChild(h('div', { class: 'seven seven-player', onpointerdown: e => { e.preventDefault(); toggle(); } }, [
           h('div', { class: 'seven-order' }, order + ' / ' + players.length),
           h('h1', { class: 'seven-name', style: { color: root.UI.teamColor(p.team) } }, (p.kid ? '⭐ ' : '') + p.name),
           body,
-          h('p', { class: 'hint' }, startedAt ? 'Space / 클릭: 멈춤' : res != null ? (S.state.sevenPaid ? '→ 다음' : 'R: 다시 하기 · → 다음 사람') : 'Space / 클릭: 시작')
+          redo,
+          h('p', { class: 'hint' }, startedAt ? '터치하면 멈춤!' : res != null ? '▶ 다음 사람' : '화면 아무 곳이나 터치하면 시작')
         ]));
       }
 
@@ -75,6 +81,7 @@
 
       const render = i => {
         stopTicker();
+        document.body.classList.toggle('timing', !!startedAt); // 초시계가 도는 동안 화면 버튼 숨김(잘못 눌림 방지)
         stage.innerHTML = '';
         if (i === 0) intro();
         else if (i === count - 1) ranking();
@@ -82,7 +89,7 @@
       };
       const ctl = root.UI.stepper(count, opts.fromEnd, render, () => !startedAt);
 
-      // 시작/멈춤 — 스페이스와 화면 클릭 공통
+      // 시작/멈춤 — 화면 터치(키보드면 스페이스)
       function toggle() {
         const i = ctl.index();
         if (i < 1 || i > players.length) return;
@@ -94,7 +101,7 @@
           startedAt = performance.now(); render(i);
         }
       }
-      ctl.destroy = stopTicker;
+      ctl.destroy = () => { stopTicker(); document.body.classList.remove('timing'); };
 
       ctl.key = e => {
         const i = ctl.index();

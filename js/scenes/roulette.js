@@ -1,4 +1,4 @@
-// 마블 룰렛 시상식 — 1등 상품부터 한 판씩, 제일 먼저 골인한 구슬의 주인이 당첨
+// 상품 시상식(마블 룰렛) — 1등 상품부터 한 판씩, 제일 먼저 골인한 구슬의 주인이 당첨
 // 코인 1개 = 이름 구슬 1개. 당첨자는 빠지고 다음 상품으로. 마지막 1명은 자동 당첨.
 (function (root) {
   'use strict';
@@ -167,7 +167,7 @@
         const pool = Logic.marblePool(S.state.players, S.state.coins, []);
         stage.appendChild(h('div', { class: 'game-intro' }, [
           h('div', { class: 'game-no' }, 'FINALE'),
-          h('h1', {}, '🎰 마블 룰렛 시상식'),
+          h('h1', {}, '🎁 상품 시상식'),
           h('ul', { class: 'rules' }, [
             h('li', {}, '코인 1개 = 내 이름 구슬 1개'),
             h('li', {}, '제일 먼저 골인한 구슬의 주인이 당첨!'),
@@ -287,7 +287,7 @@
         S.state.roulette[me.r] = { prize: prizes[me.r], id: me.winner };
         S.save();
         me.wrap.appendChild(resultCard(me.r));
-        me.status.textContent = 'Space / 탭 / → 다음 상품';
+        me.status.textContent = '화면을 터치하면 다음 상품';
       }
 
       function roundStep(r) {
@@ -299,7 +299,7 @@
           } else {
             const total = pool.reduce((s, p) => s + p.count, 0);
             const canvas = h('canvas', {});
-            const status = h('div', { class: 'roulette-status' }, pool.length + '명 · 구슬 ' + total + '개 대기 중 · Space 또는 화면 탭으로 출발!');
+            const status = h('div', { class: 'roulette-status' }, pool.length + '명 · 구슬 ' + total + '개 대기 중 · 화면을 터치하면 출발!');
             // 범례: 누가 무슨 색 구슬인지 (구슬 많은 순)
             const legend = h('div', { class: 'legend' }, pool.slice().sort((a, b) => b.count - a.count).map(p =>
               h('div', { class: 'legend-row' }, [
@@ -314,8 +314,8 @@
             return;
           }
         }
-        stage.appendChild(h('div', { class: 'roulette' }, [hud(r), resultCard(r),
-          h('p', { class: 'hint' }, 'R: 이 상품부터 다시 · → 다음')]));
+        stage.appendChild(h('div', { class: 'roulette', onclick: () => root.App.step(1) }, [hud(r), resultCard(r),
+          h('p', { class: 'hint' }, '화면을 터치하면 다음 상품')]));
       }
 
       // 연습·확인용: 룰렛을 다 안 돌려도 엔딩으로 바로 가는 버튼

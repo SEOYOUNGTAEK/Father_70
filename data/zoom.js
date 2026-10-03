@@ -11,7 +11,5 @@ window.ZOOM_QUIZ = [
   { q: '😆 이 뽀글뽀글 파마머리의 주인은? 🌀', answer: '우리 할머니! 💕',
     photo: 'assets/photos/2017-2024_손주와함께/1790937474802.jpg', cx: 0.479, cy: 0.228, zoom: 40 },
   { q: '😆 이 눈의 주인은 누구일까요? 👀', answer: '아빠·고모부 차근창! 🤓',
-    photo: 'assets/photos/2025-2026_요즘우리/1790937593170.jpg', cx: 0.864, cy: 0.545, zoom: 22, minZoom: 2.5 },
-  { q: '😆 이 멋쟁이 선글라스의 주인공은? 🕶️', answer: '2012년 패션왕 할아버지! 👑',
-    photo: 'assets/photos/2009-2015_그때그시절/1790937268603.jpg', cx: 0.55, cy: 0.22, zoom: 40 }
+    photo: 'assets/photos/2025-2026_요즘우리/1790937593170.jpg', cx: 0.864, cy: 0.545, zoom: 22, minZoom: 2.5 }
 ];
