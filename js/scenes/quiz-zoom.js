@@ -31,8 +31,10 @@
         const q = Q[s.n], reveal = s.type === 'reveal';
         // 문제에 zoom 이 있으면 그 배율에서 시작해 1.25배까지 줄인다 — 앞쪽 단계는 천천히 줄어서 4번쯤 줄여야 누군지 보이게
         const last = SCALES.length - 1;
-        const scales = q.zoom ? SCALES.map((_, k) => Math.max(1.25, Math.pow(q.zoom, Math.pow((last - k) / last, 0.7)))) : SCALES;
-        const scale = reveal ? 1 : scales[s.stage - 1];
+        // minZoom: 마지막 단계·정답 공개 때도 이만큼은 확대 — 한 사진에 두 문제 주인공이 같이 있을 때 다른 사람을 가림
+        const floor = q.minZoom || 1.25;
+        const scales = q.zoom ? SCALES.map((_, k) => Math.max(floor, Math.pow(q.zoom, Math.pow((last - k) / last, 0.7)))) : SCALES;
+        const scale = reveal ? (q.minZoom || 1) : scales[s.stage - 1];
         const points = reveal ? 1 : root.Logic.zoomPoints(s.stage);
         const from = s.n === lastN ? lastScale : scale;
         const img = h('img', { class: 'zoom-img', src: q.photo, alt: '', style: {
