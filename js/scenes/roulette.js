@@ -1,4 +1,4 @@
-// 상품 시상식(마블 룰렛) — 1등 상품부터 한 판씩, 제일 먼저 골인한 구슬의 주인이 당첨
+// 상품 시상식(마블 룰렛) — 1등부터 한 판씩, 제일 먼저 골인한 구슬의 주인이 당첨
 // 코인 1개 = 이름 구슬 1개. 당첨자는 빠지고 다음 상품으로. 마지막 1명은 자동 당첨.
 (function (root) {
   'use strict';
@@ -159,7 +159,7 @@
         return h('div', { class: 'winner' }, [
           h('div', { class: 'winner-prize' }, withIcon(res.prize, r)),
           h('div', { class: 'who', style: { color: colorOf[res.id] } }, nameOf(res.id)),
-          h('div', { class: 'what' }, res.auto ? '마지막 상품은 자동으로! 🎉' : '당첨! 축하해요 🎉')
+          h('div', { class: 'what' }, res.auto ? '마지막 선물은 자동으로! 🎉' : r === 0 ? '1등! 보너스 선물까지 하나 더! 🎉🎉' : '당첨! 축하해요 🎉')
         ]);
       }
 
@@ -171,7 +171,8 @@
           h('ul', { class: 'rules' }, [
             h('li', {}, '코인 1개 = 내 이름 구슬 1개'),
             h('li', {}, '제일 먼저 골인한 구슬의 주인이 당첨!'),
-            h('li', {}, '🏆 1등 상품부터 — 당첨자는 빠지고 다음 상품으로')
+            h('li', {}, '1등부터 차례로 선물을 받아요 — 당첨자는 빠지고 다음 등수로'),
+            h('li', {}, '🏆 1등은 보너스 선물 하나 더!')
           ]),
           h('div', { class: 'marble-list' }, pool.map(p => h('div', { class: 'marble-row' }, [
             h('span', { class: 'marble-name' }, nameOf(p.id)),
@@ -182,7 +183,7 @@
       }
 
       const hud = r => h('div', { class: 'roulette-hud' },
-        [(r + 1) + '등  ·  ', h('span', { class: 'gold' }, withIcon(prizes[r], r))]);
+        [h('span', { class: 'gold' }, withIcon(prizes[r], r))]);
 
       function play(canvas, pool, r, wrap, status) {
         const me = Object.assign(createRace(M, pool), { camX: 0, camY: 0, zoom: 1, raf: 0, r, wrap, status, slowShown: false });
@@ -287,7 +288,7 @@
         S.state.roulette[me.r] = { prize: prizes[me.r], id: me.winner };
         S.save();
         me.wrap.appendChild(resultCard(me.r));
-        me.status.textContent = '화면을 터치하면 다음 상품';
+        me.status.textContent = '화면을 터치하면 다음 등수';
       }
 
       function roundStep(r) {
@@ -315,7 +316,7 @@
           }
         }
         stage.appendChild(h('div', { class: 'roulette', onclick: () => root.App.step(1) }, [hud(r), resultCard(r),
-          h('p', { class: 'hint' }, '화면을 터치하면 다음 상품')]));
+          h('p', { class: 'hint' }, '화면을 터치하면 다음 등수')]));
       }
 
       // 연습·확인용: 룰렛을 다 안 돌려도 엔딩으로 바로 가는 버튼
