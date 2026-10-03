@@ -21,23 +21,21 @@
     ]);
   }
 
+  // 케이크 화면 — 불 끄고 금메달 케이크 입장, 노래·촛불·단체 사진 (조용한 화면)
   function celebration(stage) {
-    const S = root.Store, results = S.state.roulette;
-    const petals = Array.from({ length: 28 }, () => h('span', { class: 'petal', style: {
+    const sparkles = Array.from({ length: 22 }, () => h('span', { class: 'petal', style: {
       left: Math.random() * 100 + 'vw',
-      animationDuration: 6 + Math.random() * 6 + 's',
-      animationDelay: -Math.random() * 10 + 's',
-      fontSize: 1.4 + Math.random() * 1.6 + 'rem'
-    } }, ['🌸', '🎉', '✨', '🪙'][Math.floor(Math.random() * 4)]));
-    stage.appendChild(h('div', { class: 'ending' }, petals.concat([
-      h('div', { class: 'hanja-wrap' }, h('div', { class: 'hanja' }, '七旬')),
-      h('h1', { class: 'hero' }, '사랑하고 존경합니다'),
-      h('p', { class: 'sub' }, S.state.heroTitle),
-      results.length ? h('div', { class: 'prize-list' }, results.map(r => h('div', { class: 'prize-row' }, [
-        h('span', {}, (/^\p{Extended_Pictographic}/u.test(r.prize) ? '' : '🎁 ') + r.prize),
-        h('b', { style: { color: root.UI.teamColor((S.player(r.id) || {}).team || 'A') } }, (S.player(r.id) || {}).name || '?')
-      ]))) : null,
-      h('p', { class: 'hint' }, '📸 다 같이 단체 사진 찍어요!')
+      animationDuration: 8 + Math.random() * 7 + 's',
+      animationDelay: -Math.random() * 12 + 's',
+      fontSize: 1.2 + Math.random() * 1.4 + 'rem'
+    } }, ['✨', '🌸', '✨', '🥇'][Math.floor(Math.random() * 4)]));
+    const candles = h('div', { class: 'candles' }, Array.from({ length: 7 }, (_, k) =>
+      h('div', { class: 'candle', style: { animationDelay: (-k * 0.37) + 's' } }, h('span', { class: 'flame' }))));
+    stage.appendChild(h('div', { class: 'ending cake-scene' }, sparkles.concat([
+      candles,
+      h('h1', { class: 'cake-title' }, ['아빠의 인생은 ', h('span', { class: 'gold-word' }, '‘금’'), ' 메달 🥇']),
+      h('p', { class: 'cake-love' }, '사랑해요 ❤️'),
+      h('p', { class: 'hint' }, '🎂 생일 축하 노래 · 촛불 끄고 · 📸 다 같이 단체 사진!')
     ])));
   }
 

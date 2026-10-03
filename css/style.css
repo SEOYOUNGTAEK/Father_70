@@ -468,3 +468,23 @@ body.timing .nav { display: none; }
   text-shadow: 0 .4rem 0 #fff, 0 1rem 2rem rgba(120, 60, 20, .4); animation: jackpotPop 1s cubic-bezier(.2, 1.6, .4, 1) both;
 }
 @keyframes jackpotPop { from { transform: translateX(-50%) scale(.2); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+
+/* 케이크 화면 */
+.cake-scene { display: flex; flex-direction: column; align-items: center; }
+.candles { display: flex; gap: 2.4rem; margin-bottom: 3rem; }
+.candle {
+  position: relative; width: 1.6rem; height: 8rem; border-radius: .4rem;
+  background: repeating-linear-gradient(135deg, #fff 0 .8rem, #f2c4b3 .8rem 1.6rem); box-shadow: 0 .4rem 1rem rgba(110, 72, 40, .2);
+}
+.flame {
+  position: absolute; left: 50%; top: -3.6rem; width: 1.8rem; height: 3.2rem; transform: translateX(-50%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at 50% 75%, #fff8d0 0%, #ffd34d 35%, #ff9a2e 70%, rgba(255, 120, 40, 0) 100%);
+  box-shadow: 0 0 2.4rem 1rem rgba(255, 190, 80, .45); animation: flicker 1.1s ease-in-out infinite alternate;
+}
+@keyframes flicker { 0% { transform: translateX(-50%) scale(1) rotate(-2deg); } 100% { transform: translateX(-50%) scale(1.08, .94) rotate(3deg); } }
+.cake-title { font-family: var(--serif); font-size: 6.6rem; color: var(--ink); }
+.gold-word {
+  background: linear-gradient(180deg, #8a6222, #f3d27a 45%, #c8932f 60%, #8a6222); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cake-love { margin: 1.6rem 0 0; font-family: var(--serif); font-size: 4rem; color: var(--accent); font-weight: 700; }
