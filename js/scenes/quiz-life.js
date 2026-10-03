@@ -1,7 +1,7 @@
 // 게임1 · 할아버지 인생 퀴즈 — 팀별로 보기를 클릭해서 고르고, 정답 공개 때 자동 채점
 (function (root) {
   'use strict';
-  const h = root.UI.h, MARKS = ['①', '②', '③', '④'];
+  const h = root.UI.h, MARKS = ['①', '②', '③', '④', '⑤'];
 
   root.Scenes.quizLife = {
     create(stage, arg, opts) {
@@ -40,7 +40,7 @@
             root.UI.teamName(t),
             got != null ? h('span', { class: 'pick-result' + (got ? ' ok' : '') }, got ? '🪙 +' + got : '아쉬워요') : null
           ]),
-          h('div', { class: 'pick-btns' }, MARKS.map((m, k) => h('button', {
+          h('div', { class: 'pick-btns' }, Q[n].choices.map((_, k) => MARKS[k]).map((m, k) => h('button', {
             class: 'pick-btn' + (p.pick === k ? ' on' : ''),
             style: p.pick === k ? { background: color, borderColor: color } : {},
             onclick: () => { p.pick = k; S.save(); if (reveal) score(n); render(ctl.index()); }
@@ -54,7 +54,7 @@
 
       function choices(n, reveal) {
         const q = Q[n], ans = answerOf(n), p = picks(n), judging = reveal && q.answer == null;
-        return h('div', { class: 'choices' }, q.choices.map((c, k) => {
+        return h('div', { class: 'choices' + (q.choices.length > 4 ? ' many' : '') }, q.choices.map((c, k) => {
           let cls = 'choice';
           if (reveal && ans === k) cls += ' correct';
           else if (reveal && ans != null) cls += ' dim';

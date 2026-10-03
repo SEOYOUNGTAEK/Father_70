@@ -164,6 +164,8 @@ h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; }
 .choice.correct b { color: #fff; }
 .choice.dim { opacity: .35; }
 .choice { position: relative; }
+.choices.many { grid-template-columns: 1fr 1fr 1fr; }
+.choices.many .choice { font-size: 2.1rem; }
 .choice.judgeable { cursor: pointer; }
 .choice.judgeable:hover { border-color: var(--accent); }
 .pick-tags { position: absolute; top: -.9rem; right: 1rem; display: flex; gap: .4rem; }
