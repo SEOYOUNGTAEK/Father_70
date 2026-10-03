@@ -30,6 +30,7 @@
     saved.teamNames = { A: cfg.teams.A.name, B: cfg.teams.B.name };
     saved.heroTitle = cfg.heroTitle;
     Object.assign(saved, emptyProgress(saved.players));
+    saved.sceneIndex = 0; // 오프닝부터 다시
     saved.configVersion = cfg.version;
     return saved;
   }
