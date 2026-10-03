@@ -416,3 +416,55 @@ body.timing .nav { display: none; }
   background: var(--accent); color: #fff; font-weight: 700; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
 }
 .guide-note { margin: 0; font-size: 1.8rem; font-family: var(--serif); }
+
+/* 부상 수여: 금메달 VIP 카드 + 5만원권 비 */
+.reward { display: flex; flex-direction: column; align-items: center; gap: 2.2rem; text-align: center; }
+.reward-badge { font-family: var(--serif); font-weight: 700; font-size: 3.4rem; color: var(--accent); }
+.reward-hint { margin: 0; font-size: 2.4rem; font-family: var(--serif); }
+.reward.paid .reward-hint { color: var(--good); font-weight: 700; font-size: 2.8rem; }
+.vip-card {
+  position: relative; width: 52rem; height: 32.8rem; border-radius: 2.4rem; padding: 2.6rem 3rem; color: #4a3210;
+  background: linear-gradient(135deg, #8a6222 0%, #e9c46a 22%, #fff1c2 38%, #d9a93f 55%, #f7dc8c 72%, #9b7026 100%);
+  box-shadow: 0 2.4rem 5rem rgba(110, 72, 20, .45), inset 0 0 0 .3rem rgba(255, 245, 200, .6);
+  animation: cardIn 1s cubic-bezier(.2, 1.4, .4, 1) both, cardFloat 3s 1s ease-in-out infinite; overflow: hidden;
+}
+.vip-card::after {  /* 반짝 지나가는 빛 */
+  content: ''; position: absolute; top: -20%; bottom: -20%; width: 30%; left: -40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent); transform: skewX(-20deg);
+  animation: shine 2.8s 1.2s ease-in-out infinite;
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(6rem) rotate(-8deg) scale(.8); } to { opacity: 1; transform: none; } }
+@keyframes cardFloat { 50% { transform: translateY(-.8rem) rotate(.6deg); } }
+@keyframes shine { 0% { left: -40%; } 60%, 100% { left: 130%; } }
+.vip-top { display: flex; justify-content: space-between; align-items: center; }
+.vip-brand { font-size: 2.2rem; font-weight: 700; letter-spacing: .25em; }
+.vip-hanja { font-family: 'Batang', serif; font-size: 3.4rem; font-weight: 700; color: #7a2a14; }
+.vip-chip {
+  width: 7.4rem; height: 5.6rem; margin-top: 3rem; border-radius: .9rem;
+  background: linear-gradient(135deg, #c9a24a, #f6e3a1 45%, #b58a32); box-shadow: inset 0 0 0 .25rem rgba(120, 80, 20, .5);
+}
+.vip-no { margin-top: 2.4rem; font-size: 2.6rem; letter-spacing: .12em; font-variant-numeric: tabular-nums; text-align: left; text-shadow: 0 .1rem 0 rgba(255, 255, 255, .5); }
+.vip-bottom { position: absolute; left: 3rem; right: 3rem; bottom: 2.4rem; display: flex; justify-content: space-between; align-items: flex-end; }
+.vip-name { font-family: var(--serif); font-size: 3.4rem; font-weight: 700; }
+.vip-grade { font-size: 2.4rem; font-weight: 700; }
+.reward.paid .vip-card { animation: cardIn 0s both, cardFloat 3s ease-in-out infinite; }
+
+.money-rain { position: fixed; inset: 0; pointer-events: none; z-index: 30; overflow: hidden; }
+.bill {
+  position: absolute; top: -12rem; width: 15rem; height: 7rem; border-radius: .4rem;
+  background: linear-gradient(135deg, #f2c66d, #e8a24a 60%, #d98b3a); border: .25rem solid #fff3d6;
+  box-shadow: 0 .5rem 1.2rem rgba(120, 70, 20, .3); animation-name: billFall; animation-timing-function: linear; animation-fill-mode: forwards;
+}
+@keyframes billFall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--sway), 125vh) rotate(var(--spin)); opacity: 1; }
+}
+.bill-num { position: absolute; left: .6rem; top: .3rem; font-size: 1.4rem; font-weight: 700; color: #7a3d12; }
+.bill-text { position: absolute; left: .6rem; bottom: .3rem; font-size: 1.1rem; font-weight: 700; color: #7a3d12; }
+.bill-face { position: absolute; right: 1rem; top: 1.1rem; width: 4.4rem; height: 4.4rem; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #b8743a, #8a4a1c); opacity: .75; }
+.jackpot {
+  position: fixed; left: 50%; top: 18%; transform: translateX(-50%); z-index: 40; pointer-events: none; -webkit-text-stroke: .25rem #fff;
+  font-family: var(--serif); font-weight: 700; font-size: 9rem; color: #c8553d;
+  text-shadow: 0 .4rem 0 #fff, 0 1rem 2rem rgba(120, 60, 20, .4); animation: jackpotPop 1s cubic-bezier(.2, 1.6, .4, 1) both;
+}
+@keyframes jackpotPop { from { transform: translateX(-50%) scale(.2); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }

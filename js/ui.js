@@ -8,7 +8,7 @@
     Object.keys(attrs || {}).forEach(k => {
       const v = attrs[k];
       if (k === 'class') el.className = v;
-      else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
+      else if (k === 'style' && typeof v === 'object') Object.keys(v).forEach(s => (s.startsWith('--') ? el.style.setProperty(s, v[s]) : (el.style[s] = v[s])));
       else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
       else if (k === 'value') el.value = v;
       else if (k === 'checked' || k === 'selected') el[k] = !!v;
