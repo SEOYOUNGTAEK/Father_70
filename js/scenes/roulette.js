@@ -1,4 +1,4 @@
-// 상품 시상식(마블 룰렛) — 1등부터 한 판씩, 제일 먼저 골인한 구슬의 주인이 당첨
+// 상품 시상식(마블 룰렛) — 레이스 한 번으로 1등만 뽑고(보너스 선물 하나 더), 바로 모두에게 선물 전달식
 // 코인 1개 = 이름 구슬 1개. 당첨자는 빠지고 다음 상품으로. 마지막 1명은 자동 당첨.
 (function (root) {
   'use strict';
@@ -138,7 +138,7 @@
     _sim: { createRace, startRace, tick }, // 화면 없이 레이스를 점검할 때 사용
     create(stage, arg, opts) {
       const S = root.Store, M = root.Matter, Logic = root.Logic;
-      const prizes = S.state.prizes, count = prizes.length + 1;
+      const prizes = S.state.prizes, count = 3; // 소개 → 1등 레이스 → 선물 전달식
       const colorOf = {}, labelOf = {};
       S.state.players.forEach((p, n) => { colorOf[p.id] = PALETTE[n % PALETTE.length]; labelOf[p.id] = p.short || shortName(p.name); });
       const nameOf = id => (S.player(id) || {}).name || '?';
@@ -171,8 +171,8 @@
           h('ul', { class: 'rules' }, [
             h('li', {}, '코인 1개 = 내 이름 구슬 1개'),
             h('li', {}, '제일 먼저 골인한 구슬의 주인이 당첨!'),
-            h('li', {}, '1등부터 차례로 선물을 받아요 — 당첨자는 빠지고 다음 등수로'),
-            h('li', {}, '🏆 1등은 보너스 선물 하나 더!')
+            h('li', {}, '레이스는 딱 한 번! 🏆 1등은 보너스 선물 하나 더!'),
+            h('li', {}, '그리고 모두에게 선물을 드려요 🎁')
           ]),
           h('div', { class: 'marble-list' }, pool.map(p => h('div', { class: 'marble-row' }, [
             h('span', { class: 'marble-name' }, nameOf(p.id)),
@@ -180,11 +180,11 @@
             h('b', {}, '×' + p.count)
           ])))
         ]));
-        stage.appendChild(root.UI.actionBtn('1등 추첨 시작 ▶'));
+        stage.appendChild(root.UI.actionBtn('1등 레이스 ▶'));
       }
 
-      const hud = r => h('div', { class: 'roulette-hud' },
-        [h('span', { class: 'gold' }, withIcon(prizes[r], r))]);
+      const hud = () => h('div', { class: 'roulette-hud' },
+        [h('span', { class: 'gold' }, '🏆 1등은 누구? — 보너스 선물 하나 더!')]);
 
       function play(canvas, pool, r, wrap, status) {
         const me = Object.assign(createRace(M, pool), { camX: 0, camY: 0, zoom: 1, raf: 0, r, wrap, status, slowShown: false });
@@ -289,7 +289,7 @@
         S.state.roulette[me.r] = { prize: prizes[me.r], id: me.winner };
         S.save();
         me.wrap.appendChild(resultCard(me.r));
-        me.status.textContent = '화면을 터치하면 다음 등수';
+        me.status.textContent = '화면을 터치하면 선물 전달식 🎁';
       }
 
       function roundStep(r) {
@@ -309,28 +309,47 @@
                 h('span', { class: 'legend-name' }, nameOf(p.id)),
                 h('span', { class: 'legend-count' }, '×' + p.count)
               ])));
-            const wrap = h('div', { class: 'roulette' }, [canvas, hud(r), legend, status]);
+            const wrap = h('div', { class: 'roulette' }, [canvas, hud(), legend, status]);
             wrap.addEventListener('click', () => ctl.key({ key: ' ' })); // 폰: 탭으로 출발/다음
             stage.appendChild(wrap);
             play(canvas, pool, r, wrap, status);
             return;
           }
         }
-        stage.appendChild(h('div', { class: 'roulette', onclick: () => root.App.step(1) }, [hud(r), resultCard(r),
-          h('p', { class: 'hint' }, '화면을 터치하면 다음 등수')]));
+        stage.appendChild(h('div', { class: 'roulette', onclick: () => root.App.step(1) }, [hud(), resultCard(r),
+          h('p', { class: 'hint' }, '화면을 터치하면 선물 전달식 🎁')]));
+      }
+
+      // 선물 전달식 — 1등 축하 + 모두에게 준비한 선물 전달
+      function gifts() {
+        const win = S.state.roulette[0];
+        const others = S.state.players.filter(p => !win || p.id !== win.id);
+        stage.appendChild(h('div', { class: 'gifts' }, [
+          h('div', { class: 'game-no' }, 'GIFT'),
+          h('h1', {}, '🎁 선물 전달식'),
+          win ? h('div', { class: 'gift-winner' }, [
+            h('span', { class: 'gift-crown' }, '🏆'),
+            h('b', { style: { color: colorOf[win.id] } }, nameOf(win.id)),
+            h('span', {}, ' 님은 보너스 선물까지 두 개!')
+          ]) : null,
+          h('p', { class: 'gift-sub' }, '오늘 함께해 준 모두에게 선물을 드려요 💝'),
+          h('div', { class: 'gift-names' }, others.map(p => h('span', { class: 'chip gift-chip' }, '🎁 ' + p.name)))
+        ]));
+        stage.appendChild(root.UI.actionBtn('✨ 특별 시상식으로'));
       }
 
       // 연습·확인용: 룰렛을 다 안 돌려도 엔딩으로 바로 가는 버튼
       const skipBtn = () => h('button', { class: 'skip-btn', onclick: e => {
         e.stopPropagation();
         root.App.go(root.App.FLOW.length - 1);
-      } }, '시상식 건너뛰기 ⏭');
+      } }, '특별 시상식으로 건너뛰기 ⏭');
 
       const render = i => {
         stopRace();
         stage.innerHTML = '';
         if (i === 0) intro();
-        else roundStep(i - 1);
+        else if (i === 1) roundStep(0);
+        else gifts();
         stage.appendChild(skipBtn());
       };
       const racing = () => race && race.started && !race.winner;
@@ -339,7 +358,7 @@
       const baseNext = ctl.next;
       ctl.next = () => {
         const i = ctl.index();
-        if (i >= 1 && !S.state.roulette[i - 1]) return true; // 레이스 전에는 못 넘어감
+        if (i === 1 && !S.state.roulette[0]) return true; // 1등이 정해지기 전에는 못 넘어감
         return baseNext();
       };
       ctl.key = e => {
@@ -353,8 +372,8 @@
           }
           return true;
         }
-        if ((k === 'r' || k === 'ㄱ') && i >= 1 && !racing() && S.state.roulette[i - 1]) {
-          S.state.roulette = S.state.roulette.slice(0, i - 1);
+        if ((k === 'r' || k === 'ㄱ') && i === 1 && !racing() && S.state.roulette[0]) {
+          S.state.roulette = [];
           S.save();
           render(i);
           return true;

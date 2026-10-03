@@ -488,3 +488,32 @@ body.timing .nav { display: none; }
   background: linear-gradient(180deg, #8a6222, #f3d27a 45%, #c8932f 60%, #8a6222); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .cake-love { margin: 1.6rem 0 0; font-family: var(--serif); font-size: 4rem; color: var(--accent); font-weight: 700; }
+
+/* 선물 전달식 */
+.gifts { display: flex; flex-direction: column; align-items: center; gap: 1.6rem; text-align: center; }
+.gifts h1 { font-size: 5rem; }
+.gift-winner { font-family: var(--serif); font-size: 3.6rem; padding: 1rem 2.6rem; border-radius: 2rem; background: #fff4e6; box-shadow: 0 0 0 .25rem var(--gold), var(--shadow); }
+.gift-winner b { font-size: 4.4rem; }
+.gift-crown { margin-right: .8rem; }
+.gift-sub { margin: .4rem 0 0; font-size: 2.2rem; font-family: var(--serif); }
+.gift-names { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; max-width: 80vw; }
+.gift-chip { font-size: 2rem; }
+
+/* 특별 시상식 전환 — 어두운 무대 + 스포트라이트 */
+body.stage-dark { background: #1a120c; }
+body.stage-dark .bunting { opacity: .25; }
+.spotlight {
+  position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: radial-gradient(ellipse 46% 64% at 50% 50%, rgba(255, 236, 190, .97) 0%, rgba(255, 214, 140, .45) 50%, rgba(26, 18, 12, 1) 80%);
+  animation: spotOn 1.6s ease-out both;
+}
+@keyframes spotOn { from { opacity: 0; filter: brightness(.2); } to { opacity: 1; filter: none; } }
+.spot-sub { font-size: 2.2rem; letter-spacing: .4em; color: #8a5a20; }
+.spot-title { margin: 1rem 0; font-family: var(--serif); font-size: 6.4rem; color: #5a3410; }
+.spot-name {
+  font-family: var(--serif); font-weight: 700; font-size: 8rem;
+  background: linear-gradient(180deg, #8a6222, #f3d27a 45%, #c8932f 60%, #8a6222); -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: namePop 1.2s .8s cubic-bezier(.2, 1.5, .4, 1) both;
+}
+@keyframes namePop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+.spot-hint { margin-top: 2rem; font-size: 2.4rem; color: #5a3410; }

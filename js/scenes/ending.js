@@ -1,4 +1,4 @@
-// 엔딩 — 손주 상장(웃음) → 자녀 감사패(감동) → 축하 메시지 + 상품 결과 + 꽃잎
+// 할아버지 특별 시상식 — 전환 화면 → 손주 상장 → 자녀 감사패 → ATM 부상 → 케이크
 (function (root) {
   'use strict';
   const h = root.UI.h;
@@ -76,18 +76,34 @@
     stage.appendChild(btn);
   }
 
+  // 특별 시상식으로 전환 — 어두운 무대 + 스포트라이트
+  function spotlight(stage) {
+    document.body.classList.add('stage-dark');
+    stage.appendChild(h('div', { class: 'spotlight' }, [
+      h('div', { class: 'spot-sub' }, '오늘의 주인공'),
+      h('h1', { class: 'spot-title' }, '✨ 특별 시상식 ✨'),
+      h('div', { class: 'spot-name' }, '서강석 할아버지'),
+      h('p', { class: 'spot-hint' }, '할아버지, 앞으로 나와 주세요 👏')
+    ]));
+    stage.appendChild(root.UI.actionBtn('시상 시작 ▶'));
+  }
+
   root.Scenes.ending = {
     create(stage, arg, opts) {
       const certs = root.CERTIFICATES || [];
-      return root.UI.stepper(certs.length + 2, opts.fromEnd, i => {
+      const ctl = root.UI.stepper(certs.length + 3, opts.fromEnd, i => {
         stage.innerHTML = '';
-        if (i < certs.length) {
-          stage.appendChild(certificate(certs[i]));
+        document.body.classList.remove('stage-dark');
+        if (i === 0) spotlight(stage);
+        else if (i <= certs.length) {
+          stage.appendChild(certificate(certs[i - 1]));
           stage.appendChild(root.UI.actionBtn('다음 ▶'));
         }
-        else if (i === certs.length) reward(stage);
+        else if (i === certs.length + 1) reward(stage);
         else celebration(stage);
       });
+      ctl.destroy = () => document.body.classList.remove('stage-dark');
+      return ctl;
     }
   };
 })(this);

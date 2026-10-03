@@ -11,7 +11,7 @@
     { scene: 'memories', arg: 2, label: '추억극장 ③' },
     { scene: 'seven', label: '게임3 · 7초 맞추기' },
     { scene: 'roulette', label: '상품 시상식' },
-    { scene: 'ending', label: '엔딩' }
+    { scene: 'ending', label: '할아버지 특별 시상식' }
   ];
   let stage, current = null, index = 0;
 
