@@ -180,6 +180,7 @@
             h('b', {}, '×' + p.count)
           ])))
         ]));
+        stage.appendChild(root.UI.actionBtn('1등 추첨 시작 ▶'));
       }
 
       const hud = r => h('div', { class: 'roulette-hud' },

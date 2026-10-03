@@ -46,7 +46,10 @@
       const certs = root.CERTIFICATES || [];
       return root.UI.stepper(certs.length + 1, opts.fromEnd, i => {
         stage.innerHTML = '';
-        if (i < certs.length) stage.appendChild(certificate(certs[i]));
+        if (i < certs.length) {
+          stage.appendChild(certificate(certs[i]));
+          stage.appendChild(root.UI.actionBtn('다음 ▶'));
+        }
         else celebration(stage);
       });
     }

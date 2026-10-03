@@ -4,7 +4,7 @@
   const h = root.UI.h;
   let box = null;
 
-  function close() { if (box) { box.remove(); box = null; } }
+  function close() { if (box) { box.parentNode.remove(); box = null; } }
 
   function open(flow, go) {
     close();
@@ -23,7 +23,7 @@
     const prizes = h('textarea', { rows: 9, value: st.prizes.join('\n') });
 
     box = h('div', { class: 'setup' }, [
-      h('h2', {}, '⚙ 설정  (G 또는 Esc 로 닫기)'),
+      h('div', { class: 'setup-head' }, [h('h2', {}, '⚙ 설정'), h('button', { class: 'close-btn', onclick: close }, '✕ 닫기')]),
       h('label', {}, ['오프닝 문구  ', title]),
       h('div', { class: 'setup-teams' }, ['A', 'B'].map(t => h('label', {}, [
         h('b', { style: { color: root.UI.teamColor(t) } }, t + '팀 이름  '), teamInputs[t]]))),
@@ -48,7 +48,9 @@
       h('div', { class: 'jump' }, flow.map((f, i) => h('button', { class: 'btn ghost small',
         onclick: () => { close(); go(i); } }, (i + 1) + '. ' + f.label)))
     ]);
-    document.getElementById('overlay-root').appendChild(box);
+    // 바깥 어두운 곳을 터치해도 닫힘
+    const backdrop = h('div', { class: 'setup-backdrop', onclick: e => { if (e.target === backdrop) close(); } }, box);
+    document.getElementById('overlay-root').appendChild(backdrop);
   }
 
   root.Scenes.setup = { open, close, isOpen: () => !!box };

@@ -48,7 +48,7 @@
           h('button', {
             class: 'kid-toggle' + (p.kid ? ' on' : ''),
             onclick: () => { p.kid = !p.kid; S.save(); if (reveal) score(n); render(ctl.index()); }
-          }, (p.kid ? '⭐ ' : '☆ ') + '아이가 골랐어요 ×2')
+          }, (p.kid ? '⭐' : '☆') + ' 아이 ×2')
         ]);
       }
 
@@ -79,6 +79,7 @@
               h('li', {}, '할아버지·할머니는 정답 공개 전까지 쉿! 🤫')
             ])
           ]));
+          stage.appendChild(root.UI.actionBtn('첫 문제 ▶'));
           return;
         }
         const q = Q[s.n];
@@ -88,6 +89,7 @@
             q.storyPhoto ? h('img', { class: 'story-photo', src: q.storyPhoto, alt: '' }) : null,
             q.story ? h('p', { class: 'story-text' }, q.story) : null
           ]));
+          stage.appendChild(root.UI.actionBtn('다음 문제 ▶'));
           return;
         }
         const reveal = s.type === 'reveal';
@@ -103,7 +105,8 @@
           judgePending ? h('div', { class: 'judge' }, '⚖ ' + (q.judge || '할머니') + ' 판정! 정답 보기를 클릭해 주세요')
             : reveal && q.answer == null ? h('div', { class: 'judge small' }, '⚖ ' + (q.judge || '할머니') + ' 판정 완료 (다른 보기를 누르면 바뀌어요)') : null,
           h('div', { class: 'pick-row' }, [teamPanel(s.n, 'A', reveal), teamPanel(s.n, 'B', reveal)]),
-          h('p', { class: 'hint' }, reveal ? '→ 다음' : '두 팀 모두 고르면 → 정답 공개')
+          reveal ? null : h('p', { class: 'hint' }, '두 팀 모두 고르면 정답 공개!'),
+          root.UI.actionBtn(reveal ? (steps[i + 1] && steps[i + 1].type === 'story' ? '썰 타임 🎙' : '다음 ▶') : '정답 공개 ▶')
         ]));
       }
 

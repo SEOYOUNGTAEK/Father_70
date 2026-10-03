@@ -22,6 +22,7 @@
             h('li', {}, '정확히 7초(±0.05)면 잭팟 🪙7 !')
           ])
         ]));
+        stage.appendChild(root.UI.actionBtn('첫 번째 사람 ▶'));
       }
 
       function playerStep(p, order) {
@@ -51,8 +52,9 @@
           h('h1', { class: 'seven-name', style: { color: root.UI.teamColor(p.team) } }, (p.kid ? '⭐ ' : '') + p.name),
           body,
           redo,
-          h('p', { class: 'hint' }, startedAt ? '터치하면 멈춤!' : res != null ? '▶ 다음 사람' : '화면 아무 곳이나 터치하면 시작')
+          h('p', { class: 'hint' }, startedAt ? '터치하면 멈춤!' : res != null ? '' : '화면 아무 곳이나 터치하면 시작')
         ]));
+        if (res != null && !startedAt) stage.appendChild(root.UI.actionBtn(order < players.length ? '다음 사람 ▶' : '결과 보기 🏆'));
       }
 
       function ranking() {
@@ -77,6 +79,7 @@
               ctl.rerender();
             } }, '🪙 코인 지급') : h('p', {}, '아직 기록이 없어요')
         ]));
+        if (S.state.sevenPaid || !rows.length) stage.appendChild(root.UI.actionBtn('상품 시상식으로 ▶'));
       }
 
       const render = i => {

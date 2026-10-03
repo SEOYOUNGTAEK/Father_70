@@ -100,11 +100,11 @@
       cols.appendChild(col);
     });
     board.appendChild(cols);
-    board.appendChild(h('p', { class: 'hint' }, 'S 또는 Esc 로 닫기'));
+    board.appendChild(h('button', { class: 'close-btn', onclick: () => toggleScoreboard(false) }, '✕ 닫기'));
   }
   function toggleScoreboard(force) {
     if (!board) {
-      board = h('div', { class: 'scoreboard hidden' });
+      board = h('div', { class: 'scoreboard hidden', onclick: e => { if (e.target === board) toggleScoreboard(false); } });
       overlay().appendChild(board);
     }
     const show = force != null ? force : board.classList.contains('hidden');
@@ -126,11 +126,19 @@
     };
   }
 
+  // 화면 오른쪽 아래의 큰 진행 버튼 (폰 터치용) — 기본 동작은 다음 화면
+  function actionBtn(label, onClick) {
+    return h('button', { class: 'action-btn', onpointerdown: e => e.stopPropagation(), onclick: e => {
+      e.stopPropagation();
+      (onClick || (() => root.App.step(1)))();
+    } }, label);
+  }
+
   // 클릭한 버튼에 포커스가 남으면 Space 가 버튼을 다시 누르므로 바로 해제
   document.addEventListener('click', e => {
     const b = e.target.closest && e.target.closest('button');
     if (b) b.blur();
   });
 
-  root.UI = { h, toast, award, undo, awardBar, toggleScoreboard, refreshScoreboard, stepper, teamColor, teamName };
+  root.UI = { h, toast, award, undo, awardBar, toggleScoreboard, refreshScoreboard, stepper, teamColor, teamName, actionBtn };
 })(this);

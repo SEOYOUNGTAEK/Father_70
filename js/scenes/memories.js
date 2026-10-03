@@ -33,9 +33,11 @@
             h('h1', {}, s.chapter.title),
             h('p', {}, s.count + '장의 추억')
           ]));
+          stage.appendChild(root.UI.actionBtn('사진 보기 ▶'));
           return;
         }
-        stage.appendChild(h('div', { class: 'memory-photo' }, [
+        // 사진 오른쪽(⅔)을 탭하면 다음, 왼쪽(⅓)은 이전
+        stage.appendChild(h('div', { class: 'memory-photo', onclick: e => root.App.step(e.clientX < innerWidth / 3 ? -1 : 1) }, [
           isVideo(s.src) ? h('div', { class: 'blur-bg video-bg' }) : h('img', { class: 'blur-bg', src: s.src, alt: '' }),
           h('div', { class: 'frame kb-' + 'abcd'[(n++) % 4] }, [
             h('div', { class: 'tape' }),

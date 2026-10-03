@@ -41,7 +41,8 @@
           h('div', { class: 'hanja-wrap' }, h('div', { class: 'hanja' }, '七旬')),
           h('h1', { class: 'hero' }, S.state.heroTitle),
           h('div', { class: 'teams' }, [teamCard('A'), h('div', { class: 'vs' }, 'VS'), teamCard('B')]),
-          h('p', { class: 'hint' }, '이름을 탭(또는 끌기)하면 다른 팀으로 · 팀장 어린이가 팀 이름을 지어 주세요 · ▶ 로 시작')
+          h('p', { class: 'hint' }, '이름을 탭하면 다른 팀으로 · 팀장 어린이가 팀 이름을 지어 주세요'),
+          root.UI.actionBtn('게임 시작 ▶')
         ]));
       }
 

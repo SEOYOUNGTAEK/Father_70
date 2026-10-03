@@ -3,6 +3,7 @@
   'use strict';
   const FLOW = [
     { scene: 'opening', label: '오프닝' },
+    { scene: 'guide', label: '오늘의 순서' },
     { scene: 'memories', arg: 0, label: '추억극장 ①' },
     { scene: 'quizLife', label: '게임1 · 할아버지 인생 퀴즈' },
     { scene: 'memories', arg: 1, label: '추억극장 ②' },

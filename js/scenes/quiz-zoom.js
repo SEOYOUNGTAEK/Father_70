@@ -26,6 +26,7 @@
               h('li', {}, '1~3단계 🪙3 · 4~5단계 🪙2 · 6~7단계 🪙1 · ⭐ 아이는 2배')
             ])
           ]));
+          stage.appendChild(root.UI.actionBtn('첫 문제 ▶'));
           return;
         }
         const q = Q[s.n], reveal = s.type === 'reveal';
@@ -52,7 +53,8 @@
                 '지금 맞히면 🪙' + points
               ]),
             root.UI.awardBar('zoom-' + s.n, () => points)
-          ])
+          ]),
+          root.UI.actionBtn(reveal ? '다음 ▶' : s.stage < SCALES.length ? '🔍 더 보기' : '정답 공개 ▶')
         ]));
         requestAnimationFrame(() => requestAnimationFrame(() => { img.style.transform = 'scale(' + scale + ')'; }));
         lastScale = scale; lastN = s.n;
