@@ -8,7 +8,8 @@
   // "2025년 8월 · 태국 치앙마이" 처럼 사진 아래에 붙는 설명
   function caption(p) {
     const m = /^(\d{4})-(\d{2})/.exec(p.date || '');
-    const when = m ? m[1] + '년 ' + Number(m[2]) + '월' : '';
+    // 옛날 사진(폴더 연도로 맞춘 날짜 '…-01-01 00:00')은 날짜를 표시하지 않음
+    const when = m && !/-01-01 00:00$/.test(p.date) ? m[1] + '년 ' + Number(m[2]) + '월' : '';
     const label = (root.PARTY_CONFIG.folderLabels || {})[p.folder] || '';
     return [when, label].filter(Boolean).join(' · ');
   }
@@ -41,7 +42,7 @@
           isVideo(s.src) ? h('div', { class: 'blur-bg video-bg' }) : h('img', { class: 'blur-bg', src: s.src, alt: '' }),
           h('div', { class: 'frame kb-' + 'abcd'[(n++) % 4] }, [
             h('div', { class: 'tape' }),
-            isVideo(s.src) ? h('video', { src: s.src, autoplay: true, loop: true, playsinline: true, controls: true }) : h('img', { src: s.src, alt: '' }),
+            isVideo(s.src) ? h('video', { src: s.src, autoplay: true, loop: true, playsinline: true, controls: true, onclick: e => e.stopPropagation() }) : h('img', { src: s.src, alt: '' }),
             h('div', { class: 'memory-caption' }, caption(s.photo))
           ])
         ]));

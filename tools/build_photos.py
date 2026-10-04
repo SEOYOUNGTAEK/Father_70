@@ -58,6 +58,25 @@ def normalize_date(raw):
     return "{}-{}-{} {}:{}".format(*m.groups()) if m else ""
 
 
+def date_from_name(name):
+    """파일 이름 속 13자리 밀리초 시각(카톡 저장 파일 등) → 'YYYY-MM-DD HH:MM' (한국 시간)"""
+    import datetime
+    m = re.search(r"(1[3-9]\d{11})", name)
+    if not m:
+        return ""
+    t = datetime.datetime.fromtimestamp(int(m.group(1)) / 1000, datetime.timezone(datetime.timedelta(hours=9)))
+    return t.strftime("%Y-%m-%d %H:%M")
+
+
+def clamp_to_folder(date, folder_name):
+    """폴더 이름이 'YYYY-YYYY_' 또는 'YYYY_' 로 시작하는데 사진 날짜가 그 범위 밖이면(옛날 사진을 다시 찍은 경우) 폴더 시작 연도로"""
+    m = re.match(r"(\d{4})(?:-(\d{4}))?(?:-\d{2})?_", folder_name)
+    if not m or not date:
+        return date
+    start, end = m.group(1), m.group(2) or m.group(1)
+    return date if start <= date[:4] <= end else start + "-01-01 00:00"
+
+
 def fill_dates(dates, folder_name):
     """날짜 없는 사진은 목록에서 바로 앞(없으면 뒤) 사진 날짜, 그것도 없으면 폴더 이름의 연도"""
     out = list(dates)
@@ -109,7 +128,8 @@ def main():
                 print("  ! data에서 참조했지만 없는 사진:", folder.name, w)
                 continue
             convert(files[w], OUT / folder.name / w, REF_PX if w in ref_here else SLIDE_PX)
-        dates = fill_dates([normalize_date(exif_date(files[w])) for w in order], folder.name)
+        dates = fill_dates([clamp_to_folder(normalize_date(exif_date(files[w])) or (date_from_name(w) if w.endswith(".mp4") else ""), folder.name)
+                            for w in order], folder.name)
         manifest[folder.name] = [{"src": f"assets/photos/{folder.name}/{w}", "date": d} for w, d in zip(order, dates)]
         print(f"{folder.name}: 슬라이드 {len(order)}장, 참조 {len(ref_here)}장")
 
