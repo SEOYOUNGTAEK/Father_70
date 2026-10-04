@@ -62,6 +62,10 @@
 
 `data/certificates.js` 문구를 고친 뒤 `python tools/make_certificates.py` → `print/` 폴더에 A4 세로 300dpi PNG 2장과 PDF 가 생겨요(금색 기요셰 테두리·메달·직인, 날짜는 certificates.js 의 date). 화면 엔딩도 같은 문구를 써요.
 
+## 금메달 VIP 카드 인쇄
+
+`python tools/make_card.py` → `print/금메달카드_인쇄용.pdf`(A4에 실제 카드 크기 85.6×54mm 앞·뒷면 2세트 + 자르는 선, 600dpi). '실제 크기(100%)'로 인쇄.
+
 ## 새 버전 올릴 때
 
 `index.html` 의 `?v=8` 숫자를 모두 하나씩 올려야 폰·노트북 브라우저가 예전 파일을 쓰지 않아요.
