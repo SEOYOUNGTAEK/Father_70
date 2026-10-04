@@ -9,6 +9,7 @@
   const LEVEL = { tense: .22 };          // 슬로모션 때는 곡을 줄임
   const MASTER = .55;
   let ctx = null, master = null, mood = null, beat = 0;
+  let silenced = false;                    // 다른 창(탭·홈 화면 앱)이 음악을 가져가면 이 창은 조용히
   const nodes = {};                        // 곡 이름 → { a: Audio, g: GainNode }
   const audios = {};                       // 미리 받아 두는 Audio 요소
   let on = true;
@@ -59,15 +60,18 @@
   // 지금 mood 에 맞게 곡 전환
   function apply() {
     if (!ctx) return;
-    const target = mood ? TRACKS[mood] : null;
+    const audible = !document.hidden && !silenced;
+    const target = mood && audible ? TRACKS[mood] : null;
     const now = ctx.currentTime;
     Object.keys(nodes).forEach(name => {
       if (name === target) return;
       const n = nodes[name];
       n.g.gain.cancelScheduledValues(now);
-      n.g.gain.setTargetAtTime(0, now, .35);
-      setTimeout(() => { if ((mood ? TRACKS[mood] : null) !== name) n.a.pause(); }, 1600);
+      n.g.gain.setTargetAtTime(0, now, .18);
+      setTimeout(() => { if (currentTarget() !== name) n.a.pause(); }, 700);
     });
+    // 혹시 연결 전에 재생된 곡이 있으면 그것도 정지
+    Object.keys(audios).forEach(name => { if (name !== target && !nodes[name]) audios[name].pause(); });
     if (target) {
       const n = node(target);
       n.a.play().catch(() => { /* 첫 터치 전이면 막힘 — unlock 때 다시 */ });
@@ -75,9 +79,10 @@
       n.g.gain.setTargetAtTime(LEVEL[mood] || 1, now, .45);
     }
     clearInterval(beat);
-    beat = mood === 'tense' ? setInterval(thump, 900) : 0;
-    if (mood === 'tense') thump();
+    beat = mood === 'tense' && target ? setInterval(thump, 900) : 0;
+    if (beat) thump();
   }
+  const currentTarget = () => (mood && !document.hidden && !silenced ? TRACKS[mood] : null);
 
   function setMood(next) {
     if (next === mood) return;
@@ -107,7 +112,9 @@
     if (ensure()) {
       ctx.resume();
       master.gain.setTargetAtTime(on ? MASTER : 0, ctx.currentTime, .1);
-      if (on) apply();
+      silenced = false;
+      claim();
+      apply();
     }
     return on;
   }
@@ -116,8 +123,18 @@
   function unlock() {
     if (!ensure()) return;
     ctx.resume();
+    silenced = false;
+    claim();
     if (mood) apply();
   }
+
+  // 같은 사이트가 여러 창에 열려 있으면 마지막으로 터치한 창만 음악을 틀고 나머지는 조용히
+  const channel = 'BroadcastChannel' in root ? new BroadcastChannel('chilsun-music') : null;
+  const me = Math.random().toString(36).slice(2);
+  function claim() { if (channel) channel.postMessage(me); }
+  if (channel) channel.onmessage = e => { if (e.data !== me) { silenced = true; apply(); } };
+  // 화면에 안 보이면(다른 앱·탭으로 가면) 멈추고, 다시 보이면 이어서
+  document.addEventListener('visibilitychange', () => { if (ctx) apply(); });
   ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, unlock, { passive: true }));
   ['game', 'memory'].forEach(audioOf);     // 처음 쓰는 곡은 미리 받아 두기
 
