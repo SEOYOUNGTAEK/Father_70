@@ -11,7 +11,7 @@
       else if (k === 'style' && typeof v === 'object') Object.keys(v).forEach(s => (s.startsWith('--') ? el.style.setProperty(s, v[s]) : (el.style[s] = v[s])));
       else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
       else if (k === 'value') el.value = v;
-      else if (k === 'checked' || k === 'selected') el[k] = !!v;
+      else if (k === 'checked' || k === 'selected' || k === 'muted') el[k] = !!v;
       else if (v !== false && v != null) el.setAttribute(k, v === true ? '' : v);
     });
     [].concat(children == null ? [] : children).forEach(c => {

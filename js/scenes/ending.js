@@ -57,6 +57,8 @@
     const cashOut = () => {
       btn.remove();
       box.classList.add('paid');
+      root.Music.setMood('game');
+      [0, 600, 1300, 2100].forEach(ms => setTimeout(() => root.Music.sfx('coins'), ms));
       box.querySelector('.reward-hint').textContent = '💰 잭팟! 인생 금메달 보너스 지급 완료!';
       const rain = h('div', { class: 'money-rain' });
       for (let k = 0; k < 46; k++) {
@@ -94,6 +96,7 @@
       const ctl = root.UI.stepper(certs.length + 3, opts.fromEnd, i => {
         stage.innerHTML = '';
         document.body.classList.remove('stage-dark');
+        root.Music.setMood(i === certs.length + 2 ? 'cake' : 'ceremony');
         if (i === 0) spotlight(stage);
         else if (i <= certs.length) {
           stage.appendChild(certificate(certs[i - 1]));

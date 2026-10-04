@@ -313,6 +313,7 @@ body.idle .nav { opacity: .35; }
 .nav-btn.prev { left: max(1rem, 8px); top: 50%; transform: translateY(-50%); }
 .nav-btn.next { right: max(1rem, 8px); top: 50%; transform: translateY(-50%); }
 .nav-btn.small { background: rgba(255, 250, 241, .92); color: var(--ink); border: 2px solid var(--line); font-size: max(1.3rem, 16px); top: max(4.6rem, 40px); }
+.nav-btn.sound { right: calc(max(1rem, 8px) + 3 * (max(3.6rem, 44px) + 8px)); }
 .nav-btn.board { right: calc(max(1rem, 8px) + 2 * (max(3.6rem, 44px) + 8px)); }
 .nav-btn.gear { right: calc(max(1rem, 8px) + max(3.6rem, 44px) + 8px); }
 .nav-btn.full { right: max(1rem, 8px); }

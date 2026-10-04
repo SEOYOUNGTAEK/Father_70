@@ -277,6 +277,7 @@
           if (me.slow && !me.slowShown && !me.winner) {
             me.slowShown = true;
             wrap.classList.add('slowmo');
+            root.Music.setMood('tense');
             status.textContent = '🌀 역전 구간! 두근두근… 🥁';
           }
           draw();
@@ -289,6 +290,8 @@
         S.state.roulette[me.r] = { prize: prizes[me.r], id: me.winner };
         S.save();
         me.wrap.appendChild(resultCard(me.r));
+        root.Music.sfx('ding');
+        root.Music.setMood('game');
         me.status.textContent = '화면을 터치하면 선물 전달식 🎁';
       }
 
@@ -367,6 +370,7 @@
           if (race && !race.started) {
             startRace(M, race);
             race.status.textContent = '달려라~! 🏃';
+            root.Music.setMood('race');
           } else if (!racing()) {
             root.App.step(1);
           }

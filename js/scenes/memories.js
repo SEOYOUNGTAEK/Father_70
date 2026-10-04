@@ -42,7 +42,7 @@
           isVideo(s.src) ? h('div', { class: 'blur-bg video-bg' }) : h('img', { class: 'blur-bg', src: s.src, alt: '' }),
           h('div', { class: 'frame kb-' + 'abcd'[(n++) % 4] }, [
             h('div', { class: 'tape' }),
-            isVideo(s.src) ? h('video', { src: s.src, autoplay: true, loop: true, playsinline: true, controls: true, onclick: e => e.stopPropagation() }) : h('img', { src: s.src, alt: '' }),
+            isVideo(s.src) ? h('video', { src: s.src, autoplay: true, loop: true, muted: true, playsinline: true, controls: true, onclick: e => e.stopPropagation() }) : h('img', { src: s.src, alt: '' }),
             h('div', { class: 'memory-caption' }, caption(s.photo))
           ])
         ]));

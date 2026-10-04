@@ -13,6 +13,7 @@
     { scene: 'roulette', label: '상품 시상식' },
     { scene: 'ending', label: '할아버지 특별 시상식' }
   ];
+  const SCENE_MOOD = { memories: 'memory', ending: 'ceremony' };
   let stage, current = null, index = 0;
 
   const skippable = i => {
@@ -28,6 +29,7 @@
     root.Store.state.sceneIndex = i;
     root.Store.save();
     stage.className = 'scene-' + FLOW[i].scene;
+    if (root.Music) root.Music.setMood(SCENE_MOOD[FLOW[i].scene] || 'game'); // 장면마다 기본 배경음 (장면 안에서 바뀌기도 함)
     current = root.Scenes[FLOW[i].scene].create(stage, FLOW[i].arg, { fromEnd: !!fromEnd });
   }
 
@@ -82,6 +84,7 @@
       h('button', { class: 'nav-btn small board', title: '코인 현황', onclick: () => root.UI.toggleScoreboard() }, '🪙'),
       h('button', { class: 'nav-btn small gear', title: '설정', onclick: () => setup.open(FLOW, go) }, '⚙'),
       h('button', { class: 'nav-btn small full', title: '전체화면', onclick: toggleFullscreen }, '⛶'),
+      h('button', { class: 'nav-btn small sound', title: '배경음 켜기/끄기', onclick: e => { e.currentTarget.textContent = root.Music.toggle() ? '🔊' : '🔇'; } }, root.Music && !root.Music.isOn() ? '🔇' : '🔊'),
       h('button', { class: 'nav-btn next', title: '다음', onclick: () => step(1) }, '▶')
     ]);
     document.body.appendChild(nav);
