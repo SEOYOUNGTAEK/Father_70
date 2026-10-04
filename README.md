@@ -42,7 +42,18 @@
 
 ## 배경음
 
-음원 파일 없이 브라우저가 직접 연주해요(저작권 걱정 없음, 오프라인 OK). 추억극장=잔잔한 오르골, 게임=경쾌한 리듬, 구슬 레이스=긴장감 → 슬로모션 심장 소리, 특별 시상식=따뜻한 화음·종소리, 현금 인출=동전 소리, 케이크=조용한 오르골. 폰은 첫 터치부터 소리가 나요. 오른쪽 위 🔊/🔇 로 끄고 켜요.
+`assets/music/` — 장면별로 크로스페이드, 슬로모션 땐 곡을 줄이고 심장 소리. 폰은 첫 터치부터 소리가 나고, 오른쪽 위 🔊/🔇 로 끄고 켜요.
+
+| 장면 | 곡 |
+|---|---|
+| 추억극장 | Touching Moments Two - Higher |
+| 오프닝·안내·퀴즈·선물 | Monkeys Spinning Monkeys |
+| 7초 맞추기 | Sneaky Snitch |
+| 구슬 레이스 | Prelude and Action |
+| 특별 시상식 | Majestic Hills |
+| 케이크 | Heartwarming |
+
+Music by Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 — http://creativecommons.org/licenses/by/4.0/
 
 ## 규칙
 

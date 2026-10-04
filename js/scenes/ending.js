@@ -35,7 +35,8 @@
       candles,
       h('h1', { class: 'cake-title' }, ['아빠의 인생은 ', h('span', { class: 'gold-word' }, '‘금’'), ' 메달 🥇']),
       h('p', { class: 'cake-love' }, '사랑해요 ❤️'),
-      h('p', { class: 'hint' }, '🎂 생일 축하 노래 · 촛불 끄고 · 📸 다 같이 단체 사진!')
+      h('p', { class: 'hint' }, '🎂 생일 축하 노래 · 촛불 끄고 · 📸 다 같이 단체 사진!'),
+      h('p', { class: 'credit' }, 'Music: Kevin MacLeod (incompetech.com) · Licensed under Creative Commons: By Attribution 4.0')
     ])));
   }
 

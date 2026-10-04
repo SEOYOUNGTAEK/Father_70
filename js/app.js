@@ -13,7 +13,7 @@
     { scene: 'roulette', label: '상품 시상식' },
     { scene: 'ending', label: '할아버지 특별 시상식' }
   ];
-  const SCENE_MOOD = { memories: 'memory', ending: 'ceremony' };
+  const SCENE_MOOD = { memories: 'memory', seven: 'seven', ending: 'ceremony' };
   let stage, current = null, index = 0;
 
   const skippable = i => {
